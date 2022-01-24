@@ -47,5 +47,5 @@ while True:
 users_with_books_json = json.dumps(users_with_fields_required, indent=4)
 
 # write it to file
-with open("users_with_books.json", "w") as file:
+with open("result.json", "w") as file:
     file.write(users_with_books_json)
