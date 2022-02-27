@@ -1,43 +1,35 @@
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as ec
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.select import Select
+
+from page_objects.CatalogPage import CatalogPage
 
 
 def test_01_catalogue(browser, base_url):
-    browser.get(f"{base_url}/index.php?route=product/category&path=25_28")
-    text = WebDriverWait(browser, 5).until(ec.visibility_of_element_located((By.CSS_SELECTOR, "#content h2"))).text
-    assert text == "Monitors"
+    CatalogPage(browser).open_url(base_url, CatalogPage.MONITORS)
+    assert CatalogPage(browser).get_element(CatalogPage.CONTENT_HEADER).text == "Monitors"
 
 
 def test_02_product_thumb(browser, base_url):
-    browser.get(f"{base_url}/index.php?route=product/category&path=25_28")
-    elements = WebDriverWait(browser, 5).until(
-        ec.visibility_of_all_elements_located((By.CSS_SELECTOR, ".product-thumb")))
-    assert len(elements) == 2
+    CatalogPage(browser).open_url(base_url, CatalogPage.MONITORS)
+    elements = CatalogPage(browser).get_all_elements(CatalogPage.PRODUCTS)
+    assert len(elements) == 2, "Wrong amount of items"
 
 
 def test_03_empty_catalogue(browser, base_url):
-    browser.get(f"{base_url}/index.php?route=product/category&path=17")
-    text = WebDriverWait(browser, 5).until(ec.visibility_of_element_located((By.CSS_SELECTOR, "#content p"))).text
+    cp = CatalogPage(browser)
+    cp.open_url(base_url, CatalogPage.SOFTWARE)
+    text = cp.get_element(CatalogPage.CONTENT_SUB_HEADER).text
     assert text == "There are no products to list in this category."
-    browser.find_element(By.LINK_TEXT, "Continue")
+    cp.link_presence("Continue")
 
 
 def test_04_view_switchers(browser, base_url):
-    browser.get(f"{base_url}/index.php?route=product/category&path=25_28")
-    try:
-        WebDriverWait(browser, 3).until(ec.element_to_be_clickable((By.CSS_SELECTOR, "#grid-view")))
-        WebDriverWait(browser, 3).until(ec.element_to_be_clickable((By.CSS_SELECTOR, "#list-view")))
-    except TimeoutException:
-        raise AssertionError("View switcher elements were not found")
+    cp = CatalogPage(browser)
+    cp.open_url(base_url, CatalogPage.MONITORS)
+    cp.element_clickable(CatalogPage.GRID_VIEW)
+    cp.element_clickable(CatalogPage.LIST_VIEW)
 
 
 def test_05_sort_by_list(browser, base_url):
-    browser.get(f"{base_url}/index.php?route=product/category&path=25_28")
-    try:
-        sort_by = WebDriverWait(browser, 3).until(ec.element_to_be_clickable((By.CSS_SELECTOR, "#input-sort")))
-        assert Select(sort_by).first_selected_option.text == "Default"
-    except TimeoutException:
-        raise AssertionError("Element was not found")
+    CatalogPage(browser).open_url(base_url, CatalogPage.MONITORS)
+    sort_by = CatalogPage(browser).element_clickable(CatalogPage.SORTING)
+    assert Select(sort_by).first_selected_option.text == "Default"
