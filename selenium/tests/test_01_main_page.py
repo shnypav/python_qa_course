@@ -1,23 +1,30 @@
-from selenium.webdriver.common.by import By
+from page_objects.MainPage import MainPage
 
 
 def test_01_title(browser):
-    assert "Your Store" in browser.title
+    assert "Your Store" in MainPage(browser).get_title()
 
 
 def test_02_search_items(browser):
-    browser.find_element(By.CSS_SELECTOR, "[name=search]")
-    browser.find_element(By.CSS_SELECTOR, ".input-group-btn")
+    mp = MainPage(browser)
+    mp.element_presence(MainPage.SEARCH_BUTTON)
+    mp.element_presence(MainPage.INPUT_SEARCH)
 
 
 def test_03_cart_button(browser):
-    browser.find_element(By.CSS_SELECTOR, "[id=cart]")
+    MainPage(browser).element_presence(MainPage.CART_BUTTON)
 
 
 def test_04_slide_show(browser):
-    browser.find_element(By.CSS_SELECTOR, "[id=slideshow0]")
+    MainPage(browser).element_presence(MainPage.SLIDESHOW)
 
 
 def test_05_navbar(browser):
-    elements = browser.find_elements(By.CSS_SELECTOR, "ul.navbar-nav > li")
-    assert len(elements) == 8, "Wrong amount of items in navbar"
+    elements = MainPage(browser).get_all_elements(MainPage.NAVBAR)
+    assert len(elements) == 8
+
+
+def test_06_change_currency(browser):
+    MainPage(browser).click_on_element(MainPage.CURRENCY)
+    MainPage(browser).click_on_element(MainPage.GBP)
+    assert MainPage(browser).get_element(MainPage.CURRENCY_I).text == "£"
