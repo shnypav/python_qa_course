@@ -27,6 +27,7 @@ with open(f"{result_file}.csv", mode="w", encoding="UTF8") as f:
     writer.writerow(header)
 
     for line in ps_aux_output.splitlines()[1:]:
+        line = line.replace(",", ".")
         writer.writerow(line.split())
 
 with open(f"{result_file}.csv", mode="r") as f:
