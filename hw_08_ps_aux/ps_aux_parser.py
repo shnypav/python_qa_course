@@ -28,7 +28,8 @@ with open(f"{result_file}.csv", mode="w", encoding="UTF8") as f:
 
     for line in ps_aux_output.splitlines()[1:]:
         line = line.replace(",", ".")
-        writer.writerow(line.split())
+        line = line.split(None, 10)
+        writer.writerow(line)
 
 with open(f"{result_file}.csv", mode="r") as f:
     csv_reader = csv.DictReader(f)
@@ -38,10 +39,10 @@ with open(f"{result_file}.csv", mode="r") as f:
         process_counter += 1
         users.append(row["USER"])
         processes_by_user[row["USER"]] += 1
-        if float(row["CPU"]) > max_cpu:
+        if float(row["CPU"]) >= max_cpu:
             max_cpu = float(row["CPU"])
             max_cpu_name = row["COMMAND"]
-        if float(row["MEM"]) > max_mem:
+        if float(row["MEM"]) >= max_mem:
             max_mem = float(row["MEM"])
             max_mem_name = row["COMMAND"]
 
