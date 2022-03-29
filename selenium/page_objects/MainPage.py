@@ -1,3 +1,4 @@
+import allure
 from selenium.webdriver.common.by import By
 
 from .BasePage import BasePage
@@ -13,6 +14,7 @@ class MainPage(BasePage):
     SLIDESHOW = (By.CSS_SELECTOR, "[id=slideshow0]")
     NAVBAR = (By.CSS_SELECTOR, "ul.navbar-nav > li")
 
+    @allure.step
     def search_elements(self):
         search_input = self.get_element(self.INPUT_SEARCH)
         search_button = self.get_element(self.SEARCH_BUTTON)

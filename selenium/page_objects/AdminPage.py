@@ -1,3 +1,4 @@
+import allure
 from selenium.webdriver.common.by import By
 
 from .BasePage import BasePage
@@ -28,20 +29,24 @@ class AdminPage(BasePage):
         "Model": "Pokemon"
     }
 
+    @allure.step
     def open_admin_page(self, base_url):
         self.open_url(base_url, path="/admin")
         return self.get_title()
 
+    @allure.step
     def verify_login_form(self):
         self.element_presence(self.INPUT_USERNAME)
         self.element_presence(self.INPUT_PASSWORD)
         self.link_presence("Forgotten Password")
 
+    @allure.step
     def get_login_elements(self):
         name = self.get_element(self.INPUT_USERNAME)
         password = self.get_element(self.INPUT_PASSWORD)
         return name, password
 
+    @allure.step
     def login(self, username, password):
         self.get_element(self.INPUT_USERNAME).clear()
         self.get_element(self.INPUT_PASSWORD).clear()
@@ -49,6 +54,7 @@ class AdminPage(BasePage):
         self.get_element(self.INPUT_PASSWORD).send_keys(password)
         self.get_element(self.LOGIN_BUTTON).click()
 
+    @allure.step
     def add_product(self):
         self.click_on_element(self.MENU_CATALOG)
         self.click_on_element(self.PRODUCTS)
@@ -65,6 +71,7 @@ class AdminPage(BasePage):
 
         self.click_on_element(self.PRODUCT_SAVE_BTN)
 
+    @allure.step
     def delete_product(self):
         self.click_on_element(self.MENU_CATALOG)
         self.click_on_element(self.PRODUCTS)
@@ -76,6 +83,7 @@ class AdminPage(BasePage):
         alert = self.browser.switch_to.alert
         alert.accept()
 
+    @allure.step
     def find_product(self):
         self.click_on_element(self.MENU_CATALOG)
         self.click_on_element(self.PRODUCTS)
