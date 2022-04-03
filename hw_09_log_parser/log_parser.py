@@ -1,4 +1,5 @@
 import argparse
+import datetime
 import json
 import os
 import re
@@ -85,6 +86,9 @@ def main(file):
     data_json = json.dumps(all_together, indent=4)
 
     print(data_json)
+
+    with open(f"{datetime.datetime.now()}.json", mode="w", encoding="UTF8") as f:
+        f.write(data_json)
 
 
 if os.path.isdir(args.path):
