@@ -21,19 +21,20 @@ def get_status(value):
     return result
 
 
-def create_response(text, method, status):
-    body = ""
+def create_response(text, method, status, remote_address):
+    body = f"Request Method: {method}\n" \
+           f"Request Source: {remote_address}\n" \
+           f"Response Status: {get_status(status)}\n"
 
     for line in text.splitlines()[1:]:
         body += line.strip()  # .split(":")[0]
         body += f"\n"
 
-    body += f"Method = {method}\nStatus = {get_status(status)}"
-    status_line = 'HTTP/1.1 200 OK'
-    headers = '\r\n'.join([
+    status_line = f"HTTP/1.1 {get_status(status)}"
+    headers = "\r\n".join([
         status_line
     ])
-    resp = '\r\n\r\n'.join([
+    resp = "\r\n\r\n".join([
         headers,
         body
     ])
@@ -56,13 +57,14 @@ def main():
                 data = conn.recv(1024)
                 if data:
                     text = data.decode("utf-8")
+                    method = re.search(r"(.*)\s/", text).group(1)
                     try:
-                        method = re.search(r"(.*)\s/", text).group(1)
                         status = re.search(r".*?status=(\d{1,3})", text).group(1)
-                        response = create_response(text, method, status)
-                        conn.send(response.encode("utf-8"))
+                        response = create_response(text, method, status, raddr)
                     except AttributeError:
+                        response = create_response(text, method, status="200", remote_address=raddr)
                         pass
+                    conn.send(response.encode("utf-8"))
                 break
             conn.close()
 
