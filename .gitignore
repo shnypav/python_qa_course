@@ -131,6 +131,9 @@ dmypy.json
 .idea/
 .DS_Store
 .vscode
-/selenium/logs/
-/selenium/allure-results/
-/selenium/allure-report/
+/hw_05_06_07_selenium/logs/
+/hw_05_06_07_selenium/allure-results/
+/hw_05_06_07_selenium/allure-report/
+.fleet/run.json
+hw_03_books_users/books.csv
+hw_03_books_users/users.json
