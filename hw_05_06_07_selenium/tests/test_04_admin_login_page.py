@@ -1,4 +1,5 @@
 import datetime
+import pytest
 
 import allure
 from allure_commons.types import AttachmentType
@@ -38,7 +39,7 @@ def test_04_admin_login(browser):
 
     assert AdminPage(browser).get_title() == "Dashboard"
 
-
+@pytest.mark.xfail
 @allure.suite("Admin page testing")
 def test_05_add_new_item_in_products(browser):
     AdminPage(browser).add_product()

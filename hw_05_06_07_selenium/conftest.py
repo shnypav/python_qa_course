@@ -68,7 +68,7 @@ def choose_driver(request):
     return driver
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def browser(request):
     driver = choose_driver(request)
     driver.get(request.config.getoption("--url"))
@@ -97,7 +97,7 @@ def base_url(request):
     return request.config.getoption("--url")
 
 
-@pytest.fixture(scope="module", autouse=True)
+@pytest.fixture(scope="session", autouse=True)
 def get_environment(pytestconfig, request, browser):
     props = {
         "Browser": request.config.getoption("--browser"),
