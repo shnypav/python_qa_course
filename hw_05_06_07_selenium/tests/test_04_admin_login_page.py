@@ -15,7 +15,8 @@ def test_01_admin_page(browser, base_url):
 
 
 @allure.suite("Admin page testing")
-def test_02_credential_fields(browser):
+def test_02_credential_fields(browser, base_url):
+    AdminPage(browser).open_admin_page(base_url)
     name, password = AdminPage(browser).get_login_elements()
     if "demo.opencart.com" in AdminPage(browser).get_current_url():
         assert name.get_attribute("value") == "demo"
@@ -26,12 +27,14 @@ def test_02_credential_fields(browser):
 
 
 @allure.suite("Admin page testing")
-def test_03_other_elements(browser):
+def test_03_other_elements(browser, base_url):
+    AdminPage(browser).open_admin_page(base_url)
     AdminPage(browser).verify_login_form()
 
 
 @allure.suite("Admin page testing")
-def test_04_admin_login(browser):
+def test_04_admin_login(browser, base_url):
+    AdminPage(browser).open_admin_page(base_url)
     if "demo.opencart.com" in AdminPage(browser).get_current_url():
         AdminPage(browser).login("demo", "demo")
     else:
@@ -42,7 +45,8 @@ def test_04_admin_login(browser):
 
 @pytest.mark.xfail
 @allure.suite("Admin page testing")
-def test_05_add_new_item_in_products(browser):
+def test_05_add_new_item_in_products(browser, base_url):
+    AdminPage(browser).open_admin_page(base_url)
     AdminPage(browser).add_product()
     AdminPage(browser).find_product()
     results = AdminPage(browser).get_element(AdminPage.RESULTS_NUMBER).text
@@ -57,7 +61,8 @@ def test_05_add_new_item_in_products(browser):
 
 @pytest.mark.skip(reason="Flacky one")
 @allure.suite("Admin page testing")
-def test_06_delete_product(browser):
+def test_06_delete_product(browser, base_url):
+    AdminPage(browser).open_admin_page(base_url)
     AdminPage(browser).delete_product()
     AdminPage(browser).find_product()
     results = AdminPage(browser).get_element(AdminPage.RESULTS_NUMBER).text

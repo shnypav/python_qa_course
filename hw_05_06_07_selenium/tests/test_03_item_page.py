@@ -12,14 +12,16 @@ def test_01_item(browser, base_url):
 
 
 @allure.suite("Item's page testing")
-def test_02_buttons_clickable(browser):
+def test_02_buttons_clickable(browser, base_url):
+    ItemPage(browser).open_url(base_url, ItemPage.NOKOND300)
     ItemPage(browser).element_clickable(ItemPage.FAVORITE_BUTTON)
     ItemPage(browser).element_clickable(ItemPage.COMPARE_BUTTON)
     ItemPage(browser).element_clickable(ItemPage.ADD_TO_CART_BUTTON)
 
 
 @allure.suite("Item's page testing")
-def test_03_qty_field_editable(browser):
+def test_03_qty_field_editable(browser, base_url):
+    ItemPage(browser).open_url(base_url, ItemPage.NOKOND300)
     qty_field = ItemPage(browser).get_element(ItemPage.QUANTITY_INPUT)
     qty_field.clear()
     qty_field.send_keys("5")
@@ -27,7 +29,8 @@ def test_03_qty_field_editable(browser):
 
 
 @allure.suite("Item's page testing")
-def test_04_description_review(browser):
+def test_04_description_review(browser, base_url):
+    ItemPage(browser).open_url(base_url, ItemPage.NOKOND300)
     ip = ItemPage(browser)
     ip.link_presence(ItemPage.DESCRIPTION_LINK)
     ip.element_presence(ItemPage.REVIEWS_LINK)
@@ -35,5 +38,6 @@ def test_04_description_review(browser):
 
 
 @allure.suite("Item's page testing")
-def test_05_image(browser):
+def test_05_image(browser, base_url):
+    ItemPage(browser).open_url(base_url, ItemPage.NOKOND300)
     ItemPage(browser).element_presence(ItemPage.IMAGE)
