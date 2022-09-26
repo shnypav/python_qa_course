@@ -56,8 +56,8 @@ report = f"Отчёт о состоянии системы:\n" \
          f"{by_user_formatted}" \
          f"Всего памяти используется: {'{:.2f}'.format(total_memory)}\n" \
          f"Всего CPU используется: {'{:.2f}'.format(total_cpu)}\n" \
-         f"Больше всего памяти использует: {max_mem_name[:20]}\n" \
-         f"Больше всего CPU использует: {max_cpu_name[:20]}"
+         f"Больше всего памяти использует: {max_mem_name[:20]} uses {max_mem}\n" \
+         f"Больше всего CPU использует: {max_cpu_name[:20]} uses {max_cpu}"
 
 print(report)
 
