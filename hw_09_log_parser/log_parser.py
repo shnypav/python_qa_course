@@ -96,7 +96,7 @@ if os.path.isdir(args.path):
         args.path += "/"
     for file in os.listdir(args.path):
         if file.endswith(".log"):
-            b = 5
+            f = 5
             main(f"{args.path}{file}")
 else:
     main(args.path)
