@@ -1,0 +1,17 @@
+{
+  "configurations": [
+    {
+      "type": "python",
+      "name": "Run current file",
+      "arguments": [],
+      "file": "$FILE$"
+    },
+    {
+      "type": "python-tests",
+      "name": "tests",
+      "testFramework": "pytest",
+      "target": "hw_02_figures/tests/test_circle",
+      "arguments": []
+    }
+  ]
+}
