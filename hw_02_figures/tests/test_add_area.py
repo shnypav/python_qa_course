@@ -3,8 +3,9 @@ import pytest
 from ..src.Rectangle import Rectangle
 
 
-class TempClass():
+class TempClass:
     pass
+
 
 def test_add_area_01(create_rectangle, create_square):
     # default figures from conftest.py: rectangle = 2, square = 1
@@ -32,4 +33,4 @@ def test_add_area_05(create_rectangle, create_square):
     with pytest.raises(ValueError) as error:
         create_rectangle.add_area(TempClass)
     assert error.type is ValueError
-    assert error.value.args[0]  == "Could not calculate area with argument given"
+    assert error.value.args[0] == "Could not calculate area with argument given"
