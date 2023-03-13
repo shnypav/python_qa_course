@@ -12,10 +12,18 @@ class Circle(Figure):
 
     @property
     def area(self):
+        """
+
+        @return:
+        """
         area = pi * (self.radius ** 2)
         return area
 
     @property
     def perimeter(self):
+        """
+
+        @return: 
+        """
         perimeter = 2 * pi * self.radius
         return perimeter

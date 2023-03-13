@@ -11,9 +11,6 @@
             "name": "tests",
             "testFramework": "pytest",
             "target": "hw_02_figures/tests/test_circle",
-            "dependsOn": [
-                "Run current file"
-            ],
             "arguments": []
         }
     ]

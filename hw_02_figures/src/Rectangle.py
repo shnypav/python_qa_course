@@ -16,6 +16,6 @@ class Rectangle(Figure):
         return perimeter
 
     @property
-    def area(self):
+    def area(self) -> object:
         area = self.side_a * self.side_b
         return area
