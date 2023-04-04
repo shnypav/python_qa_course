@@ -17,5 +17,9 @@ class Rectangle(Figure):
 
     @property
     def area(self) -> object:
+        """
+
+        @return:
+        """
         area = self.side_a * self.side_b
         return area
