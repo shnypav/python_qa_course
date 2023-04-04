@@ -15,7 +15,6 @@ def test_02_search_items(browser):
     print()
     print()
     mp = MainPage(browser)
-    print()
     mp.element_presence(MainPage.SEARCH_BUTTON)
     print()
     print()
