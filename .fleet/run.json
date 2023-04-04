@@ -6,6 +6,7 @@
             "arguments": [],
             "file": "$FILE$",
             "allowParallelRun": true,
+            "dependsOn": ["tests"],
         },
         {
             "type": "python-tests",
