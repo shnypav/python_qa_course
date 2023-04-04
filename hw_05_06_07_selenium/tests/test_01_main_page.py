@@ -14,10 +14,14 @@ def test_01_title(browser):
 def test_02_search_items(browser):
     print()
     mp = MainPage(browser)
+    print("temp")
+    print()
+    print()
     mp.element_presence(MainPage.SEARCH_BUTTON)
+    print("tmp")
     print()
     mp.element_presence(MainPage.INPUT_SEARCH)
-    print()
+    print("654")
     print()
 
 
