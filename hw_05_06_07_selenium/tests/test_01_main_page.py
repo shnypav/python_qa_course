@@ -14,7 +14,6 @@ def test_01_title(browser):
 def test_02_search_items(browser):
     mp = MainPage(browser)
     mp.element_presence(MainPage.SEARCH_BUTTON)
-
     mp.element_presence(MainPage.INPUT_SEARCH)
 
 
