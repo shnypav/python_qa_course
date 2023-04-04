@@ -12,9 +12,16 @@ def test_01_title(browser):
 @allure.suite("Main page testing")
 @allure.severity(allure.severity_level.NORMAL)
 def test_02_search_items(browser):
+    print()
+    print()
     mp = MainPage(browser)
+    print()
     mp.element_presence(MainPage.SEARCH_BUTTON)
+    print()
+    print()
+    print()
     mp.element_presence(MainPage.INPUT_SEARCH)
+    print()
 
 
 
