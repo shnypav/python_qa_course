@@ -11,7 +11,17 @@
             "name": "tests",
             "testFramework": "pytest",
             "target": "hw_02_figures/tests/test_circle",
-            "arguments": []
-        }
+            "arguments": [],
+            "allowParallelRun": true,
+        },
+        {
+            "type": "python-tests",
+            "name": "Selenium",
+            "testFramework": "pytest",
+            "target": "hw_05_06_07_selenium/tests/test_01_main_page",
+            "arguments": ["--", "--browser=safari"],
+            "allowParallelRun": true,
+        },
+
     ]
 }
