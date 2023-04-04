@@ -42,7 +42,6 @@ def choose_driver(request):
 
     else:
         browser_ver = request.config.getoption("--browser_ver")
-        options = None
         if browser == "chrome":
             options = webdriver.ChromeOptions()
         elif browser == "firefox":
