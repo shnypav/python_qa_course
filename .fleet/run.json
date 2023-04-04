@@ -4,29 +4,14 @@
             "type": "python",
             "name": "Run current file",
             "arguments": [],
-            "file": "$FILE$",
-            "allowParallelRun": true,
-            "dependsOn": ["tests"],
+            "file": "$FILE$"
         },
-        {
-            "type": "python",
-            "name": "Python configuration",
-            "dependsOn": ["Run current file"],
-            "environment": {
-
-            },
-            "allowParallelRun": true,
-        },
-        
         {
             "type": "python-tests",
             "name": "tests",
             "testFramework": "pytest",
-            "dependsOn": ["Run current file"],
-            "workingDir": ".fleet/",
             "target": "hw_02_figures/tests/test_circle",
-            "arguments": [],
-            "allowParallelRun": true,
+            "arguments": []
         },
         {
             "type": "python-tests",
