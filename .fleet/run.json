@@ -4,7 +4,7 @@
             "type": "python",
             "name": "Run current file",
             "arguments": [],
-            "file": "$FILE$"
+            "file": "$FILE$",
         },
         {
             "type": "python-tests",
@@ -19,9 +19,11 @@
             "name": "Selenium",
             "testFramework": "pytest",
             "target": "hw_05_06_07_selenium/tests/test_01_main_page",
-            "arguments": ["--", "--browser=safari"],
-            "allowParallelRun": true,
-        },
-
+            "arguments": [
+                "--",
+                "--browser=safari"
+            ],
+            "allowParallelRun": true
+        }
     ]
 }
