@@ -5,6 +5,7 @@
             "name": "Run current file",
             "arguments": [],
             "file": "$FILE$",
+            "allowParallelRun": true,
         },
         {
             "type": "python-tests",
