@@ -12,6 +12,8 @@
             "type": "python-tests",
             "name": "tests",
             "testFramework": "pytest",
+            "dependsOn": ["Run current file"],
+            "workingDir": ".fleet/",
             "target": "hw_02_figures/tests/test_circle",
             "arguments": [],
             "allowParallelRun": true,
