@@ -12,6 +12,10 @@
             "type": "python",
             "name": "Python configuration",
             "dependsOn": ["Run current file"],
+            "environment": {
+
+            },
+            "allowParallelRun": true,
         },
         
         {
