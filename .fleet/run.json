@@ -9,6 +9,12 @@
             "dependsOn": ["tests"],
         },
         {
+            "type": "python",
+            "name": "Python configuration",
+            "dependsOn": ["Run current file"],
+        },
+        
+        {
             "type": "python-tests",
             "name": "tests",
             "testFramework": "pytest",
