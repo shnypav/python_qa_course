@@ -26,5 +26,4 @@ class Circle(Figure):
         @return: 
         """
         perimeter = 2 * pi * self.radius
-        per = perimeter
-        return per
+        return perimeter
