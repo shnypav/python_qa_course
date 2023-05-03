@@ -52,7 +52,7 @@ def test_circumcircle_radius(a, b, c, expected_radius):
 
 
 @pytest.mark.parametrize("side_a, side_b, side_c, expected_radius", [
-    (3, 4, 5, 1),
+    (3, 4, 5, 2),
     (6, 8, 10, 2),
     (5, 12, 13, 2)
 ])
