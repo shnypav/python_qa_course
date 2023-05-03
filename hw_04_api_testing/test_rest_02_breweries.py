@@ -18,7 +18,7 @@ def test_01_brewery_by_field(field, search_string):
 # test 2
 # https://api.openbrewerydb.org/breweries/madtree-brewing-cincinnati
 # get brewery by post_id, post_id should be = search string
-@pytest.mark.parametrize("id", ["trail-dog-brewing-co-novato", "madtree-brewing-cincinnati"])
+@pytest.mark.parametrize("id", ["08f78223-24f8-4b71-b381-ea19a5bd82df", "fb94830f-6196-4f59-9189-c9060b778085"])
 def test_02_brewery_by_id(id):
     r = requests.get(f"https://api.openbrewerydb.org/breweries/{id}")
     result = r.json()

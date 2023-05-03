@@ -38,3 +38,24 @@ def test_create_triangle_with_invalid_sides(side_a, side_b, side_c):
     with pytest.raises(TypeError) as error:
         Triangle(side_a, side_b, side_c)
     assert error.type is TypeError
+
+
+@pytest.mark.parametrize("a,b,c,expected_radius", [
+    (3, 4, 5, 2.5),
+    (5, 12, 13, 6.5),
+    (7, 24, 25, 12.5),
+    (8, 15, 17, 8.5),
+])
+def test_circumcircle_radius(a, b, c, expected_radius):
+    triangle = Triangle(a, b, c)
+    assert triangle.circumcircle_radius == expected_radius
+
+
+@pytest.mark.parametrize("side_a, side_b, side_c, expected_radius", [
+    (3, 4, 5, 1),
+    (6, 8, 10, 2),
+    (5, 12, 13, 2)
+])
+def test_incircle_radius(side_a, side_b, side_c, expected_radius):
+    triangle = Triangle(side_a, side_b, side_c)
+    assert triangle.incircle_radius == expected_radius
