@@ -8,13 +8,6 @@
         },
         {
             "type": "python-tests",
-            "name": "tests",
-            "testFramework": "pytest",
-            "target": "hw_02_figures/tests/test_circle",
-            "arguments": []
-        },
-        {
-            "type": "python-tests",
             "name": "Selenium",
             "testFramework": "pytest",
             "target": "hw_05_06_07_selenium/tests/test_01_main_page",
@@ -23,6 +16,25 @@
                 "--browser=safari"
             ],
             "allowParallelRun": true
+        },
+        {
+            "name": "Tests from path using arguments --path",
+            "type": "python-tests",
+            "workingDir": "$PROJECT_DIR$/hw_04_api_testing",
+            "testFramework": "pytest",
+            "arguments": [
+                "--path",
+                "$PROJECT_DIR$/hw_04_api_testing"
+            ]
+        },
+        {
+            "type": "python-tests",
+            "name": "Tests from multiple paths",
+            "testFramework": "pytest",
+            "targetType": "path",
+            "targets": [
+                "hw_02_figures/tests", "hw_04_api_testing"
+            ]
         }
     ]
 }
