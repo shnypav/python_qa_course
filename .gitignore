@@ -138,3 +138,7 @@ hw_03_books_users/books.csv
 hw_03_books_users/users.json
 /allure-results/
 hw_08_ps_aux/
+
+# .gitignore content
+hw_08_ps_aux/*.txt
+hw_08_ps_aux/*.csv
