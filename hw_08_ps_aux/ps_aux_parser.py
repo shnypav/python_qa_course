@@ -49,17 +49,18 @@ with open(f"{result_file}.csv", mode="r") as f:
 for user, amount in sorted(processes_by_user.items(), key=lambda kv: kv[1], reverse=True):
     by_user_formatted += f"{user}: {amount}\n"
 
-report = f"Отчёт о состоянии системы:\n" \
-         f"Пользователи системы: {', '.join(x for x in set(users))}\n" \
-         f"Процессов запущено: {process_counter}\n" \
-         f"Пользовательских процессов:\n" \
+report = f"System report:\n" \
+         f"System users: {', '.join(x for x in set(users))}\n" \
+         f"Processes running: {process_counter}\n" \
+         f"User processes:\n" \
          f"{by_user_formatted}" \
-         f"Всего памяти используется: {'{:.2f}'.format(total_memory)}\n" \
-         f"Всего CPU используется: {'{:.2f}'.format(total_cpu)}\n" \
-         f"Больше всего памяти использует: {max_mem_name[:20]} uses {max_mem}\n" \
-         f"Больше всего CPU использует: {max_cpu_name[:20]} uses {max_cpu}"
+         f"Total memory used: {'{:.2f}'.format(total_memory)}\n" \
+         f"Total CPU used: {'{:.2f}'.format(total_cpu)}\n" \
+         f"Most memory used by: {max_mem_name[:20]} uses {max_mem}\n" \
+         f"Most CPU used by: {max_cpu_name[:20]} uses {max_cpu}"
 
 print(report)
 
 with open(f"{result_file}.txt", mode="w", encoding="UTF8") as f:
     f.write(report)
+    
