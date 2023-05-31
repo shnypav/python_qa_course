@@ -34,6 +34,7 @@ def test_create_circle_with_invalid_radius(radius):
     assert error.type is TypeError
 
 
+# Test case to validate that creating a Circle with a radius less than 0 raises a ValueError
 def test_create_circle_radius_less_than_zero():
     with pytest.raises(ValueError) as error:
         Circle(-1)

@@ -22,6 +22,9 @@ def read_file(file):
         "OPTIONS": 0,
         "TRACE": 0
     }
+
+
+    
     requests_other = 0
     requests_by_ip = defaultdict(int)
     requests_by_time = dict()

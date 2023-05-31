@@ -10,12 +10,9 @@ class Circle(Figure):
             raise ValueError("Radius should be >= 0")
         self.radius = radius
 
+    # Returns the area of the circle using the formula area = pi * radius^2
     @property
     def area(self):
-        """
-
-        @return:
-        """
         area = pi * (self.radius ** 2)
         return area
 
@@ -25,5 +22,6 @@ class Circle(Figure):
 
         @return: 
         """
+        # Perimeter property which calculates and returns the perimeter of the circle using the formula: 2 * pi * radius
         perimeter = 2 * pi * self.radius
         return perimeter

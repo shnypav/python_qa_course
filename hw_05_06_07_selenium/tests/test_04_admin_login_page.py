@@ -5,7 +5,7 @@ import allure
 from allure_commons.types import AttachmentType
 
 from env import PASS
-from page_objects.AdminPage import AdminPage
+from ..page_objects.AdminPage import AdminPage
 
 
 @allure.suite("Admin page testing")

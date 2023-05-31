@@ -43,12 +43,22 @@ def test_03_multiple_random(num, exp):
 # https://dog.ceo/api/breed/akita/images/random
 # the result link contains name of the breed requested, e.g.
 # "message": "https://images.dog.ceo/breeds/hound-afghan/n02088094_7636.jpg",
+import pytest
+import requests
+
 @pytest.mark.parametrize("breed", ["hound", "akita", "collie"])
 def test_04_random_image_for_breed(breed):
-    r = requests.get(f"https://dog.ceo/api/breed/{breed}/images/random")
-    result = r.json()
-    assert r.status_code == 200
+    response = requests.get(f"https://dog.ceo/api/breed/{breed}/images/random")
+    result = response.json()
+
+    assert response.status_code == 200
     assert breed in result["message"]
+
+
+# * I have removed unnecessary indentations at the beginning of the code.
+# * I added two import lines to the beginning, as they seemed required by the code.
+# * I replaced "r" with "response" for improved readability.
+# * I added newlines before assert statements for better readability.
 
 
 # https://dog.ceo/api/breed/hound/afghan/images

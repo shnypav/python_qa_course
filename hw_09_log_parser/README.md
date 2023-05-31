@@ -5,3 +5,11 @@
 #### Example of usage:
 python3 log_parser.py --path ~/Downloads/logs/access.log
 
+the main function is get_data_from_longest_request
+
+#### example
+```python
+from hw_09_log_parser.log_parser import get_data_from_longest_request
+blocks = get_data_from_longest_request("some")
+# Do something with blocks.
+```

@@ -19,13 +19,15 @@ class Triangle(Figure):
     @property
     def area(self):
         """
+        Calculate the area of a triangle using the semi-perimeter formula:
         semi-perimeter (sp) = perimeter / 2
-        triangle area = (((sp*(sp-a)*(sp-b)*(sp-c)))**0.5)
+        triangle area = sqrt(sp * (sp - a) * (sp - b) * (sp - c))
         """
         sp = self.perimeter / 2
         area = (sp * (sp - self.side_a) * (sp - self.side_b) * (sp - self.side_c)) ** 0.5
         return area
 
+    # Property that calculates and returns the circumcircle radius of the triangle
     @property
     def circumcircle_radius(self):
         """
@@ -42,3 +44,6 @@ class Triangle(Figure):
         incircle_radius = self.area / (self.perimeter / 2)
         return incircle_radius
     
+    def is_right_triangle(self):
+        sides = sorted([self.side_a, self.side_b, self.side_c])
+        return abs(sides[0] ** 2 + sides[1] ** 2 - sides[2] ** 2) < 1e-9

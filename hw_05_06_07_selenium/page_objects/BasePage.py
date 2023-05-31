@@ -28,7 +28,6 @@ class BasePage:
         @param base_url:
         @param path:
         """
-        print(hello_world)
         self.logger.debug(f"Opening url = {base_url}{path}")
         self.browser.get(f"{base_url}{path}")
 

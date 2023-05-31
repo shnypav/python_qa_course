@@ -1,11 +1,13 @@
 {
     "configurations": [
-        {
-            "type": "python",
-            "name": "Run current file",
-            "arguments": [],
-            "file": "$FILE$"
-        },
+//        {
+//            "type": "python",
+//            "name": "Run current file",
+//            "arguments": [],
+//            "file": "",
+//
+//        },
+
         {
             "type": "python-tests",
             "name": "Selenium",
@@ -29,12 +31,53 @@
         },
         {
             "type": "python-tests",
-            "name": "Tests from multiple paths",
+            "name": "a lot of tests",
             "testFramework": "pytest",
+            "allowParallelRun": true,
             "targetType": "path",
             "targets": [
                 "hw_02_figures/tests", "hw_04_api_testing"
             ]
-        }
+        },
+
+        {
+            "name": "ps_aux_parser",
+            "type": "python",
+            "workingDir": "$PROJECT_DIR$/hw_08_ps_aux",
+            "environment": {
+                "PYTHONUNBUFFERED": "1",
+                "PYTHONPATH": "$PROJECT_DIR$",
+            },
+            "file": "$PROJECT_DIR$/hw_08_ps_aux/ps_aux_parser.py",
+        },
+
+        {
+            "name": "trololo",
+            "type": "python-tests",
+            "workingDir": "$PROJECT_DIR$/hw_04_api_testing",
+            "environment": {
+                "PYTHONPATH": "$PROJECT_DIR$",
+            },
+            "testFramework": "pytest",
+            "targets": ["test_rest_03_jsonplaceholder.py::test_03_new_post"],
+        },
+        {
+            "name": "pytest in test_rest_03_jsonplaceholder.py",
+            "type": "python-tests",
+            "workingDir": "$PROJECT_DIR$/hw_04_api_testing",
+            "environment": {
+                "PYTHONPATH": "$PROJECT_DIR$",
+            },
+            "testFramework": "pytest",
+            "targets": ["$PROJECT_DIR$/hw_04_api_testing/test_rest_03_jsonplaceholder.py"],
+            "targetType": "path",
+        },
+
+
+
+
+
+
+
     ]
 }
