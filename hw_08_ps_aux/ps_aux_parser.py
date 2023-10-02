@@ -24,7 +24,7 @@ def write_output_to_csv(ps_aux_output, result_file):
 
 def calculate_statistics(result_file):
     total_cpu = total_memory = process_counter = 0
-    max_cpu_name = max_mem_name = ""
+    max_cpu_processe_namaae = max_mem_name = ""
     max_cpu = max_mem = 0
     users = []
     processes_by_user = defaultdict(int)
@@ -39,12 +39,12 @@ def calculate_statistics(result_file):
             processes_by_user[row["USER"]] += 1
             if float(row["CPU"]) >= max_cpu:
                 max_cpu = float(row["CPU"])
-                max_cpu_name = row["COMMAND"]
+                max_cpu_processe_namaae = row["COMMAND"]
             if float(row["MEM"]) >= max_mem:
                 max_mem = float(row["MEM"])
                 max_mem_name = row["COMMAND"]
 
-    return total_cpu, total_memory, process_counter, max_cpu_name, max_cpu, max_mem_name, max_mem, users, processes_by_user
+    return total_cpu, total_memory, process_counter, max_cpu_processe_namaae, max_cpu, max_mem_name, max_mem, users, processes_by_user
 
 
 def create_report(total_cpu, total_memory, process_counter, max_cpu_name, max_cpu, max_mem_name, max_mem, users,
