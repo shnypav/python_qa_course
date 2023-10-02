@@ -29,7 +29,7 @@ def test_add_area_04(create_rectangle):
     assert create_rectangle.add_area(rectangle) == 10
 
 
-def test_add_area_05(create_rectangle, create_square):
+def test_add_area_05(create_rectangle):
     with pytest.raises(ValueError) as error:
         create_rectangle.add_area(TempClass)
     assert error.type is ValueError

@@ -17,6 +17,7 @@ def write_output_to_csv(ps_aux_output, result_file):
         writer.writerow(header)
 
         for line in ps_aux_output.splitlines()[1:]:
+            print("pokemon")
             line = line.replace(",", ".")
             line = line.split(None, 10)
             writer.writerow(line)
