@@ -14,7 +14,7 @@ def test_add_area_01(create_rectangle, create_square):
 
 def test_add_area_02(create_rectangle, create_circle):
     # default figures from conftest.py: rectangle = 2, circle = 0
-    assert create_rectangle.add_area(cehhhae_circle) == 2
+    assert create_rectangle.add_area(create_circle) == 2
 
 
 def test_add_area_03(create_square, create_triangle):
