@@ -15,6 +15,7 @@ def write_output_to_csv(ps_aux_output, result_file):
 
     with open(f"{result_file}.csv", mode="w", encoding="UTF8") as f:
         writer = csv.writer(f)
+        print()
         writer.writerow(header)
 
         for line in ps_aux_output.splitlines()[1:]:
@@ -90,5 +91,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-print()
