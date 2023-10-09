@@ -1,4 +1,5 @@
 import csv
+import logging
 from collections import defaultdict
 from datetime import datetime
 from subprocess import run, PIPE
@@ -17,8 +18,6 @@ def write_output_to_csv(ps_aux_output, result_file):
         writer.writerow(header)
 
         for line in ps_aux_output.splitlines()[1:]:
-            print()
-            print("pokemon2334")
             line = line.replace(",", ".")
             line = line.split(None, 10)
             writer.writerow(line)
@@ -84,7 +83,8 @@ def main():
     statistics = calculate_statistics(result_file)
     report = create_report(*statistics)
 
-    print(report)
+    logging.basicConfig(level=logging.DEBUG)
+    logging.debug(report)
     write_report_to_file(report, result_file)
 
 
