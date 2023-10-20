@@ -1,5 +1,4 @@
 import csv
-import logging
 from collections import defaultdict
 from datetime import datetime
 from subprocess import run, PIPE
@@ -15,7 +14,6 @@ def write_output_to_csv(ps_aux_output, result_file):
 
     with open(f"{result_file}.csv", mode="w", encoding="UTF8") as f:
         writer = csv.writer(f)
-        print("helfgdfgdlo")
         writer.writerow(header)
 
         for line in ps_aux_output.splitlines()[1:]:
@@ -83,9 +81,7 @@ def main():
 
     statistics = calculate_statistics(result_file)
     report = create_report(*statistics)
-
-    logging.basicConfig(level=logging.DEBUG)
-    logging.debug(report)
+    print(report)
     write_report_to_file(report, result_file)
 
 
