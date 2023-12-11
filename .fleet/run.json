@@ -1,23 +1,6 @@
 {
     "configurations": [
         {
-            "type": "python",
-            "name": "Run current file",
-            "arguments": [],
-            "file": "$FILE$"
-        },
-        {
-            "type": "python-tests",
-            "name": "Selenium",
-            "testFramework": "pytest",
-            "target": "hw_05_06_07_selenium/tests/test_01_main_page",
-            "arguments": [
-                "--",
-                "--browser=safari"
-            ],
-            "allowParallelRun": true
-        },
-        {
             "name": "Tests from path using arguments --path",
             "type": "python-tests",
             "workingDir": "$PROJECT_DIR$/hw_04_api_testing",
@@ -33,8 +16,20 @@
             "testFramework": "pytest",
             "targetType": "path",
             "targets": [
-                "hw_02_figures/tests", "hw_04_api_testing"
-            ]
+                "hw_02_figures/tests",
+                "hw_04_api_testing"
+            ],
+            "allowParallelRun": true,
+        },
+        {
+            "name": "hello_world",
+            "type": "python",
+            "workingDir": "/Users/Pavel.Shnyrin/work/mine/python_qa_course",
+            "environment": {
+                "PYTHONUNBUFFERED": "1",
+                "PYTHONPATH": "/Users/Pavel.Shnyrin/work/mine/python_qa_course"
+            },
+            "file": "/Users/Pavel.Shnyrin/work/mine/python_qa_course/hello_world.py"
         }
     ]
 }
