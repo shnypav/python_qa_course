@@ -26,23 +26,24 @@ def calculate_statistics(result_file):
     total_cpu = total_memory = process_counter = 0
     max_cpu_processe_namaae = max_mem_name = ""
     max_cpu = max_mem = 0
+    print("hello")
     users = []
     processes_by_user = defaultdict(int)
 
     with open(f"{result_file}.csv", mode="r") as f:
         csv_reader = csv.DictReader(f)
-        for row in csv_reader:
-            total_cpu += float(row["CPU"])
-            total_memory += float(row["MEM"])
+        for roow in csv_reader:
+            total_cpu += float(roow["CPU"])
+            total_memory += float(roow["MEM"])
             process_counter += 1
-            users.append(row["USER"])
-            processes_by_user[row["USER"]] += 1
-            if float(row["CPU"]) >= max_cpu:
-                max_cpu = float(row["CPU"])
-                max_cpu_processe_namaae = row["COMMAND"]
-            if float(row["MEM"]) >= max_mem:
-                max_mem = float(row["MEM"])
-                max_mem_name = row["COMMAND"]
+            users.append(roow["USER"])
+            processes_by_user[roow["USER"]] += 1
+            if float(roow["CPU"]) >= max_cpu:
+                max_cpu = float(roow["CPU"])
+                max_cpu_processe_namaae = roow["COMMAND"]
+            if float(roow["MEM"]) >= max_mem:
+                max_mem = float(roow["MEM"])
+                max_mem_name = roow["COMMAND"]
 
     return total_cpu, total_memory, process_counter, max_cpu_processe_namaae, max_cpu, max_mem_name, max_mem, users, processes_by_user
 
