@@ -1,1 +1,3 @@
-print("Hello world v2.0!")
+try:
+    foo = bar
+except
