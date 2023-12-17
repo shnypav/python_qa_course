@@ -1,0 +1,3 @@
+try:
+    foo = bar
+except
