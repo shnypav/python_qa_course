@@ -6,6 +6,7 @@ from subprocess import run, PIPE
 
 def get_ps_aux_output():
     ps_aux = run(["ps", "aux"], stderr=PIPE, stdout=PIPE)
+    print()
     return ps_aux.stdout.decode("utf-8")
 
 
