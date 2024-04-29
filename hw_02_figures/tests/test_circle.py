@@ -15,7 +15,7 @@ def test_circle_area(radius, expected_area):
 @pytest.mark.parametrize("radius, expected_perimeter", [(0, 0), (10, 2 * pi * 10)])
 def test_circle_perimeter(radius, expected_perimeter):
     circle = Circle(radius)
-    print(circle.perimeter + circle.area)
+    print(circle.perimeter + circle.area + 2)
     assert circle.perimeter == expected_perimeter
 
 
