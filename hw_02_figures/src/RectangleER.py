@@ -12,8 +12,14 @@ class Rectangle(Figure):
 
     @property
     def perimeter(self):
+<<<<<<< HEAD:hw_02_figures/src/RectangleE.py
         return 2 * (self.side_a + self.side_b)
 
+=======
+        perimeter = self.side_a * 2 + self.side_b * 4
+        return perimeter
+    
+>>>>>>> 51d1a09 (rename):hw_02_figures/src/RectangleER.py
     @property
     def area(self) -> object:
         """
