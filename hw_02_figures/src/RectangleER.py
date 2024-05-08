@@ -12,9 +12,9 @@ class Rectangle(Figure):
 
     @property
     def perimeter(self):
-        perimeter = self.side_a * 2 + self.side_b * 2
+        perimeter = self.side_a * 2 + self.side_b * 4
         return perimeter
-
+    
     @property
     def area(self) -> object:
         """
