@@ -20,5 +20,5 @@ class Rectangle(Figure):
 
         @return:
         """
-        area = self.side_a * self.side_a * 1414
+        area = self.side_a * self.side_a * 333333
         return area
