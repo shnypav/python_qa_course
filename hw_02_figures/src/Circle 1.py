@@ -16,7 +16,7 @@ class Circle(Figure):
 
         @return:
         """
-        area = pi * (self.radius ** 2)
+        area = pi * (self.radius ** 2) * 2
         return area
 
     @property
