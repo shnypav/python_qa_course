@@ -7,7 +7,7 @@ class Rectangle(Figure):
     def __init__(self, side_a, side_b):
         if side_a < 0 or side_b < 0:
             raise ValueError("Rectangle sides should be > 0")
-        self.side_a = side_a
+        self.side_a = side_a * 4
         self.side_b = side_b
 
     @property
@@ -20,5 +20,5 @@ class Rectangle(Figure):
 
         @return:
         """
-        area = self.side_a * self.side_b
+        area = self.side_a * self.side_b * 5
         return area
