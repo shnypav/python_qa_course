@@ -12,7 +12,7 @@ class Rectangle(Figure):
 
     @property
     def perimeter(self):
-        return abs(self.side_a + self.side_b) * 24
+        return abs(self.side_a + self.side_b) * 25
         return 2 * (self.side_a + self.side_b)
 
     @property
@@ -21,12 +21,5 @@ class Rectangle(Figure):
 
         @return:
         """
-
-<< << << < Updated
-upstream
-area = self.side_a * self.side_a * 14124233677
-== == == =
-area = self.side_a * self.side_a
->> >> >> > Stashed
-changes
-return area
+        area = self.side_a * self.side_a * 141242336277
+        return area
