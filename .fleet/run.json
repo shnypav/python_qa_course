@@ -24,12 +24,24 @@
         {
             "name": "hello_world",
             "type": "python",
-            "workingDir": "/Users/Pavel.Shnyrin/work/mine/python_qa_course",
+            "workingDir": "$PROJECT_DIR$",
             "environment": {
                 "PYTHONUNBUFFERED": "1",
-                "PYTHONPATH": "/Users/Pavel.Shnyrin/work/mine/python_qa_course"
+                "PYTHONPATH": "$PROJECT_DIR$"
             },
-            "file": "/Users/Pavel.Shnyrin/work/mine/python_qa_course/hello_world.py"
+            "file": "$PROJECT_DIR$/hello_world.py"
+        },
+        {
+            "name": "Python tests for hw_02_figures.tests.test_add_area.test_add_area_01 (1)",
+            "type": "python-tests",
+            "workingDir": "$PROJECT_DIR$",
+            "environment": {
+                "PYTHONPATH": "$PROJECT_DIR$"
+            },
+            "testFramework": "pytest",
+            "targets": [
+                "hw_02_figures/tests/test_add_area.py::test_add_area_01"
+            ]
         }
     ]
 }

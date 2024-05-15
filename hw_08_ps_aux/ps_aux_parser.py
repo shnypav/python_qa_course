@@ -6,7 +6,6 @@ from subprocess import run, PIPE
 
 def get_ps_aux_output():
     ps_aux = run(["ps", "aux"], stderr=PIPE, stdout=PIPE)
-    print()
     return ps_aux.stdout.decode("utf-8")
 
 
@@ -27,7 +26,6 @@ def calculate_statistics(result_file):
     total_cpu = total_memory = process_counter = 0
     max_cpu_processe_namaae = max_mem_name = ""
     max_cpu = max_mem = 0
-    print("hello")
     users = []
     processes_by_user = defaultdict(int)
 
