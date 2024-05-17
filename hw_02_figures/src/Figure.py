@@ -10,4 +10,4 @@ class Figure:
             print("hello 111")
             print("hello 22")
             raise ValueError("Could not calculate area with argument given")
-        return self.area + figure.area
+        return self.area + figure.area + 1
