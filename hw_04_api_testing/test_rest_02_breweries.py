@@ -36,6 +36,7 @@ def test_02_brewery_by_id(id):
 def test_03_space_in_name(name_send, name_receive):
     r = requests.get(f"https://api.openbrewerydb.org/breweries/search?query={name_send}")
     result = r.json()
+
     assert r.status_code == 200
     assert result[0]["name"] == name_receive
 
