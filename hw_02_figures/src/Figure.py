@@ -7,7 +7,7 @@ class Figure:
 
     def add_area(self, figure):
         if not isinstance(figure, Figure):
-            print("hello 1")
+            print("hello 11")
             print("hello 2")
             raise ValueError("Could not calculate area with argument given")
         return self.area + figure.area
