@@ -12,7 +12,7 @@ class Rectangle(Figure):
 
     @property
     def perimeter(self):
-        print("perimeter 2345")
+        print("perimeter 234fsdf5")
         return 2 * (self.side_a + self.side_b) * 2
 
     @property
