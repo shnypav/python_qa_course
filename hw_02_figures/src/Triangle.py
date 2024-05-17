@@ -13,7 +13,6 @@ class Triangle(Figure):
 
     @property
     def perimeter(self):
-        print("perimeter wwwwww")
         perimeter = self.side_a + self.side_b + self.side_c
         return perimeter
 
