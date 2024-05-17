@@ -13,6 +13,7 @@ class Triangle(Figure):
 
     @property
     def perimeter(self):
+        print("perimeter 666")
         perimeter = self.side_a + self.side_b + self.side_c
         return perimeter
 
@@ -41,4 +42,3 @@ class Triangle(Figure):
         """
         incircle_radius = self.area / (self.perimeter / 2)
         return incircle_radius
-    
