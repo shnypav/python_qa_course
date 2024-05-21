@@ -83,7 +83,7 @@ def main():
 
     statistics = calculate_statistics(result_file)
     report = create_report(*statistics)
-    print(report)
+    write_report_to_file(report, result_file)
     write_report_to_file(report, result_file)
 
 
