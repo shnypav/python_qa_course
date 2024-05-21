@@ -1,5 +1,26 @@
 from ..src.Figure import Figure
 
+"""
+Class Triangle inherits from the Figure class. It represents a triangle figure.
+
+Attributes:
+- name (str): The name of the figure.
+- side_a (float): Length of the first side of the triangle.
+- side_b (float): Length of the second side of the triangle.
+- side_c (float): Length of the third side of the triangle.
+
+Methods:
+- __init__(self, side_a, side_b, side_c): Initializes a new instance of the class. Sets up the sides of the triangle and checks if the triangle
+  with provided sides can exist.
+
+Properties:
+- perimeter (float): Returns the perimeter of the triangle.
+- area (float): Returns the area of the triangle using the Heron's formula.
+- circumcircle_radius (float): Returns the radius of the circumcircle of the triangle. It's the radius of a circle passing through the vertices
+  of the triangle.
+- incircle_radius (float): Returns the radius of an incircle of the triangle. It's the radius of a circle inscribed in the triangle.
+"""
+
 
 class Triangle(Figure):
     name = "Triangle"
