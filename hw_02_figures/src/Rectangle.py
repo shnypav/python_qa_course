@@ -12,8 +12,13 @@ class Rectangle(Figure):
 
     @property
     def perimeter(self):
+<<<<<<< HEAD
         print()
         return 2 * (self.side_a + self.side_b + 2)
+=======
+        print("perimeter sfsdfsdfddkkkkkkds")
+        return 2 * (self.side_a + self.side_b) * 2
+>>>>>>> HEAD@{1}
 
     @property
     def area(self) -> object:
