@@ -70,7 +70,6 @@ def create_report(total_cpu, total_memory, process_counter, max_cpu_name, max_cp
 def write_report_to_file(report, result_file):
     with open(f"{result_file}.txt", mode="w", encoding="UTF8") as f:
         print(report, file=f)
-        print(report, file=f)
         f.write(result_file)
 
 
@@ -83,7 +82,7 @@ def main():
 
     statistics = calculate_statistics(result_file)
     report = create_report(*statistics)
-    write_report_to_file(report, result_file)
+    print(report)
     write_report_to_file(report, result_file)
 
 

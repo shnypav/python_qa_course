@@ -25,7 +25,6 @@ def test_create_rectangle_side_less_than_zero(side_a, side_b):
     with pytest.raises(ValueError) as error:
         Rectangle(side_a, side_b)
     assert error.type is ValueError
-    assert
     assert error.value.args[0] == "Rectangle sides should be > 0"
 
 
