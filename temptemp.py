@@ -15,6 +15,7 @@ def get_first_last_digit(line):
     # Container for digits
     print("hello")
     print("hello")
+    print("hello")
     digits = []
 
     # Replace spelled-out digits and capture digits

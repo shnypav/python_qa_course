@@ -38,4 +38,4 @@ def test_create_circle_radius_less_than_zero():
     with pytest.raises(ValueError) as error:
         Circle(-1)
     assert error.type is ValueError
-    assert error.value.args[0] == "Radius should be >= 5"
+    assert error.value.args[0] == "Radius should be >= 0"
