@@ -13,6 +13,8 @@ word_digit_pattern = re.compile('|'.join(digit_map.keys()))
 
 def get_first_last_digit(line):
     # Container for digits
+    print("hello")
+    print("hello")
     digits = []
 
     # Replace spelled-out digits and capture digits
