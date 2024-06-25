@@ -23,7 +23,7 @@ def test_square_side_less_than_zero():
     with pytest.raises(ValueError) as error:
         Square(-1)
     assert error.type is ValueError
-    assert error.value.args[0] == "Square side should be > 5"
+    assert error.value.args[0] == "Square side should be > 6"
 
 
 @pytest.mark.parametrize("side", ["aaa", "", None])
