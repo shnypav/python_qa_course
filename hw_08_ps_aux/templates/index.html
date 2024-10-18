@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>System Report</title>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto&family=Oswald:wght@300&display=swap" rel="stylesheet">
+        <style>
+            .default-bg {
+                background-color: white;
+            }
+
+            .success-bg {
+                background-color: lightgreen;
+            }
+
+            .error-bg {
+                background-color: lightcoral;
+            }
+
+            body {
+                font-family: 'Roboto', sans-serif;
+                color: #333;
+            }
+
+            .container {
+                margin: 50px auto;
+                text-align: center;
+                width: 80%;
+                background-color: #fff; /* Ensure the container itself has a white background */
+                padding: 20px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Optional: adds a bit of a shadow for better visual separation */
+                border-radius: 8px; /* Optional: rounds the corners of the container */
+            }
+            h1 {
+                font-family: 'Oswald', sans-serif;
+            }
+            button {
+                padding: 10px 20px;
+                font-size: 16px;
+                cursor: pointer;
+                margin-bottom: 20px;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
+            th, td {
+                border: 1px solid #ddd;
+                padding: 8px;
+                background-color: #fff; /* Ensure table cells have a white background */
+                text-align: left; /* Align text to the left */
+            }
+            th {
+                background-color: #f2f2f2;
+            }
+            tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
+            .category {
+                font-weight: bold;
+            }
+            .detail {
+                color: grey;
+            }
+        </style>
+    </head>
+    <body class="
+{% if success is defined and success == true %}
+success-bg
+{% elif success is defined and success == false %}
+error-bg
+{% else %}
+default-bg
+{% endif %}
+          ">
+        <div class="container">
+            <h1>Generate System Report</h1>
+            <form method="post">
+                <button type="submit">Generate report</button>
+            </form>
+            <div>
+                {% if report %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Detail</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for entry in report %}
+                        <tr>
+                            <td class="category">{{ entry['Category'] }}</td>
+                            <td class="detail">
+                                {% if entry['Category'] == 'User processes' and entry['Detail'] is mapping %}
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>User</th>
+                                            <th>Number of Processes</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for user, count in entry['Detail'].items() %}
+                                        <tr>
+                                            <td>{{ user }}</td>
+                                            <td>{{ count }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                {% else %}
+                                {{ entry['Detail'] }}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% endif %}
+            </div>
+        </div>
+    </body>
+</html>
