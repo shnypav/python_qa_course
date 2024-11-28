@@ -25,21 +25,19 @@ def index():
 
             filtered_processes_by_user = {user: count for user, count in processes_by_user.items() if count >= 10}
 
-            report = []
-            report.append({'Category': 'System report', 'Detail': ''})
-            report.append({'Category': 'System users', 'Detail': ', '.join(set(users))})
-            report.append({'Category': 'Processes running', 'Detail': str(process_counter)})
-            report.append({'Category': 'User processes',
-                           'Detail': filtered_processes_by_user if filtered_processes_by_user else {
-                               'No users with more than 10 processes.': ''}})
-            report.append({'Category': 'Total memory used', 'Detail': f"{total_memory:.2f} MB"})
-            report.append({'Category': 'Total CPU used', 'Detail': f"{total_cpu:.2f}"})
-            report.append(
-                {'Category': 'Most memory used by process', 'Detail': f"{max_mem_name[:20]} uses {max_mem:.2f} MB"})
-            report.append({'Category': 'Most CPU used by process', 'Detail': f"{max_cpu_name[:20]} uses {max_cpu}"})
-            report.append({'Category': 'Application with most memory usage',
-                           'Detail': f"{max_application_name[:20]} uses {max_application_mem:.2f} MB"})
-            report.append({'Category': 'Fleet application memory usage', 'Detail': f"{fleet_memory_usage:.2f} MB"})
+            report = [{'Category': 'System report', 'Detail': ''},
+                      {'Category': 'System users', 'Detail': ', '.join(set(users))},
+                      {'Category': 'Processes running', 'Detail': str(process_counter)}, {'Category': 'User processes',
+                                                                                          'Detail': filtered_processes_by_user if filtered_processes_by_user else {
+                                                                                              'No users with more than 10 processes.': ''}},
+                      {'Category': 'Total memory used', 'Detail': f"{total_memory:.2f} MB"},
+                      {'Category': 'Total CPU used', 'Detail': f"{total_cpu:.2f}"},
+                      {'Category': 'Most memory used by process',
+                       'Detail': f"{max_mem_name[:20]} uses {max_mem:.2f} MB"},
+                      {'Category': 'Most CPU used by process', 'Detail': f"{max_cpu_name[:20]} uses {max_cpu}"},
+                      {'Category': 'Application with most memory usage',
+                       'Detail': f"{max_application_name[:20]} uses {max_application_mem:.2f} MB"},
+                      {'Category': 'Fleet application memory usage', 'Detail': f"{fleet_memory_usage:.2f} MB"}]
 
             success = True
 
@@ -55,3 +53,6 @@ def index():
 
 if __name__ == '__main__':
     app.run(debug=True)
+    for f in os.listdir('.'):
+        if f.endswith('-scan.csv'):
+            os.remove(f)

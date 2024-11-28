@@ -1,9 +1,11 @@
-import pytest
 import csv
-from unittest import mock
-from datetime import datetime
 from collections import defaultdict
-from hw_08_ps_aux.ps_aux_parser import get_ps_aux_output, write_output_to_csv, calculate_statistics as cs, \
+from datetime import datetime
+from unittest import mock
+
+import pytest
+
+from hw_08_ps_aux.ps_aux_parser import write_output_to_csv, calculate_statistics as cs, \
     create_report, get_total_memory_in_mb, get_application_name, write_report_to_file, main
 
 
