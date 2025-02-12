@@ -19,9 +19,22 @@ def index():
                 [f for f in os.listdir('.') if f.endswith('-scan.csv')],
                 key=lambda x: os.path.getctime(os.path.join('.', x))
             ).rsplit('.', 1)[0]
-            total_cpu, total_memory, process_counter, max_cpu_name, max_cpu, max_mem_name, max_mem, users, processes_by_user, max_application_name, max_application_mem, fleet_memory_usage = calculate_statistics(
-                result_file_base
-            )
+            (
+                total_cpu,
+                total_memory,
+                process_counter,
+                max_cpu_name,
+                max_cpu,
+                max_mem_name,
+                max_mem,
+                users,
+                processes_by_user,
+                max_application_name,
+                max_application_mem,
+                fleet_memory_usage,
+                max_app_processes,
+                fleet_processes,
+            ) = calculate_statistics(result_file_base)
 
             filtered_processes_by_user = {user: count for user, count in processes_by_user.items() if count >= 10}
 
@@ -37,7 +50,8 @@ def index():
                       {'Category': 'Most CPU used by process', 'Detail': f"{max_cpu_name[:20]} uses {max_cpu}"},
                       {'Category': 'Application with most memory usage',
                        'Detail': f"{max_application_name[:20]} uses {max_application_mem:.2f} MB"},
-                      {'Category': 'Fleet application memory usage', 'Detail': f"{fleet_memory_usage:.2f} MB"}]
+                      {'Category': 'Fleet application memory usage',
+                       'Detail': f"{fleet_memory_usage:.2f} MB (across {fleet_processes} processes)"}]
 
             success = True
 

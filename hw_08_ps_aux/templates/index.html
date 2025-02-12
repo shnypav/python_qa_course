@@ -2,67 +2,146 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>System Report</title>
-        <link href="https://fonts.googleapis.com/css2?family=Roboto&family=Oswald:wght@300&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600&display=swap" rel="stylesheet">
         <style>
+            :root {
+                --primary-color: #4a90e2;
+                --success-color: #2ecc71;
+                --error-color: #e74c3c;
+                --text-color: #2c3e50;
+                --background-color: #f5f6fa;
+            }
+
             .default-bg {
-                background-color: white;
+                background-color: var(--background-color);
             }
 
             .success-bg {
-                background-color: lightgreen;
+                background-color: var(--success-color);
+                color: white;
             }
 
             .error-bg {
-                background-color: lightcoral;
+                background-color: var(--error-color);
+                color: white;
             }
 
             body {
-                font-family: 'Roboto', sans-serif;
-                color: #333;
+                font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+                color: var(--text-color);
+                margin: 0;
+                padding: 0;
+                min-height: 100vh;
+                line-height: 1.6;
             }
 
             .container {
-                margin: 50px auto;
-                text-align: center;
-                width: 80%;
-                background-color: #fff; /* Ensure the container itself has a white background */
-                padding: 20px;
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Optional: adds a bit of a shadow for better visual separation */
-                border-radius: 8px; /* Optional: rounds the corners of the container */
+                margin: 2rem auto;
+                max-width: 1200px;
+                width: 90%;
+                background-color: white;
+                padding: 2rem;
+                border-radius: 16px;
+                box-shadow: 0 10px 30px rgba(100, 116, 0, 0.1);
             }
+
             h1 {
-                font-family: 'Oswald', sans-serif;
+                font-family: 'Poppins', sans-serif;
+                font-weight: 600;
+                color: var(--primary-color);
+                margin-bottom: 2rem;
+                font-size: 2.5rem;
             }
+
             button {
-                padding: 10px 20px;
-                font-size: 16px;
+                background-color: var(--primary-color);
+                color: white;
+                padding: 12px 24px;
+                font-size: 1rem;
+                font-weight: 500;
+                border: none;
+                border-radius: 8px;
                 cursor: pointer;
-                margin-bottom: 20px;
+                transition: transform 0.2s, box-shadow 0.2s;
             }
+
+            button:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(74, 144, 226, 0.2);
+            }
+
+
+
+            /* Main report table styles */
             table {
                 width: 100%;
-                border-collapse: collapse;
-                margin-top: 20px;
+                border-collapse: separate;
+                border-spacing: 0;
+                margin-top: 2rem;
+                border-radius: 8px;
+                overflow: hidden;
             }
+
             th, td {
-                border: 1px solid #ddd;
-                padding: 8px;
-                background-color: #fff; /* Ensure table cells have a white background */
-                text-align: left; /* Align text to the left */
+                padding: 1rem;
+                background-color: white;
+                text-align: left;
+                border: none !important; /* Explicitly remove borders from main table cells */
             }
+
+            tr {
+                border: none !important; /* Explicitly remove borders from main table rows */
+            }
+
             th {
-                background-color: #f2f2f2;
+                background-color: var(--primary-color);
+                color: white;
+                font-weight: 500;
             }
+
             tr:nth-child(even) {
-                background-color: #f9f9f9;
+                background-color: #f8fafc;
             }
+
             .category {
-                font-weight: bold;
+                font-weight: 600;
+                color: var(--primary-color);
             }
+
             .detail {
-                color: grey;
+                color: #64748b;
+                border: 2px solid #d1d5db; /* Add a solid border to the detail section */
+                padding: 0.5rem; /* Add padding for better spacing */
+                border-radius: 8px; /* Optional: Add rounded corners for aesthetics */
             }
+
+
+
+            /* Nested table styles */
+
+
+
+            /* Add borders only to the "User processes" nested table */
+            td.detail table {
+                margin-top: 0;
+                box-shadow: none;
+                border: 2px solid #d1d5db; /* Add a solid border to the nested table */
+                border-collapse: collapse; /* Ensure borders don't double up */
+                width: 100%; /* Ensure the table spans the full width of the cell */
+            }
+
+            td.detail table th, td.detail table td {
+                border: 1px solid #d1d5db; /* Add borders to all cells in the nested table */
+                padding: 0.5rem; /* Add padding for better readability */
+            }
+
+            td.detail table th {
+                background-color: #f1f5f9;
+                color: var(--text-color);
+            }
+
         </style>
     </head>
     <body class="
@@ -77,7 +156,13 @@ default-bg
         <div class="container">
             <h1>Generate System Report</h1>
             <form method="post">
-                <button type="submit">Generate report</button>
+                <button type="submit">
+                    {% if report %}
+                    Regenerate
+                    {% else %}
+                    Generate report
+                    {% endif %}
+                </button>
             </form>
             <div>
                 {% if report %}
@@ -91,21 +176,27 @@ default-bg
                     <tbody>
                         {% for entry in report %}
                         <tr>
-                            <td class="category">{{ entry['Category'] }}</td>
+                            <td class="category">
+                                {% if entry['Category'] == 'Processes running' %}
+                                Unique users
+                                {% else %}
+                                {{ entry['Category'] }}
+                                {% endif %}
+                            </td>
                             <td class="detail">
                                 {% if entry['Category'] == 'User processes' and entry['Detail'] is mapping %}
-                                <table>
+                                <table style="      border: 2px solid #96a6bd !important; border-collapse: collapse; width: 100%; box-shadow: 0 0 10px rgba(100, 116, 139, 0.5);"><!-- High-contrast border and shadow -->
                                     <thead>
                                         <tr>
-                                            <th>User</th>
-                                            <th>Number of Processes</th>
+                                            <th style="      border: 1px solid #96a6bd !important; background-color: #f1f5f9; color: var(--text-color); padding: 0.5rem;">User</th>
+                                            <th style="      border: 1px solid #96a6bd !important; background-color: #f1f5f9; color: var(--text-color); padding: 0.5rem;">Number of Processes</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {% for user, count in entry['Detail'].items() %}
                                         <tr>
-                                            <td>{{ user }}</td>
-                                            <td>{{ count }}</td>
+                                            <td style="      border: 1px solid #96a6bd !important; padding: 0.5rem;">{{ user }}</td>
+                                            <td style="      border: 1px solid #96a6bd !important; padding: 0.5rem;">{{ count }}</td>
                                         </tr>
                                         {% endfor %}
                                     </tbody>
@@ -114,6 +205,7 @@ default-bg
                                 {{ entry['Detail'] }}
                                 {% endif %}
                             </td>
+
                         </tr>
                         {% endfor %}
                     </tbody>
