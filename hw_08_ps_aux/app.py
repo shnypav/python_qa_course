@@ -1,6 +1,17 @@
 from flask import Flask, render_template, request
 from hw_08_ps_aux.ps_aux_parser import main as generate_report, calculate_statistics
 import os
+import logging
+
+# Configure logging
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler("app.log"),
+        logging.StreamHandler()
+    ]
+)
 
 app = Flask(__name__)
 
@@ -14,11 +25,14 @@ def index():
 
     if request.method == 'POST':
         try:
+            logging.info("Generating report...")
             generate_report()
             result_file_base = max(
                 [f for f in os.listdir('.') if f.endswith('-scan.csv')],
                 key=lambda x: os.path.getctime(os.path.join('.', x))
             ).rsplit('.', 1)[0]
+            logging.info(f"Latest result file base: {result_file_base}.csv")
+
             (
                 total_cpu,
                 total_memory,
@@ -57,16 +71,17 @@ def index():
 
         except Exception as e:
             success = False
-            error_message = str(e)
-            print(f"An error occurred: {e}")
-
+            error_message = f"An error occurred: {str(e)}"
+            logging.error(f"An error occurred: {e}", exc_info=True)
     return render_template('index.html', report=report, success=success, error_message=error_message)
 
 
 # Update the template file (index.html) to include error_message for display
 
 if __name__ == '__main__':
+    logging.info("Starting the application...")
     app.run(debug=True)
     for f in os.listdir('.'):
         if f.endswith('-scan.csv'):
+            logging.info(f"Removing file: {f}")
             os.remove(f)

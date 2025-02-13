@@ -30,7 +30,7 @@ def test_index_post_success(mock_calculate_statistics, mock_generate_report, cli
     mock_calculate_statistics.return_value = (
         10.0, 100.0, 5, 'proc1', 5.0, 'proc2', 10.0,
         ['user1', 'user2'], {'user1': 5, 'user2': 3},
-        'app1', 50.0, 5.0
+        'app1', 50.0, 5.0, 2, 3
     )
 
     rv = client.post('/')
@@ -39,7 +39,6 @@ def test_index_post_success(mock_calculate_statistics, mock_generate_report, cli
     assert b'System users' in rv.data
 
 
-# Updated test
 @patch('app.generate_report')
 @patch('app.calculate_statistics')
 def test_index_post_failure(mock_calculate_statistics, mock_generate_report, client):
@@ -48,4 +47,4 @@ def test_index_post_failure(mock_calculate_statistics, mock_generate_report, cli
 
     rv = client.post('/')
     assert rv.status_code == 200
-    assert b'Test Exception' in rv.data  # Check for the actual error message
+    assert b"An error occurred: Test Exception" in rv.data  # Check for the full error message

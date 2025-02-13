@@ -6,30 +6,40 @@ from datetime import datetime
 import subprocess
 from typing import Dict, List, Tuple
 
+import logging
 import psutil
 
-CSV_EXTENSION = ".csv"
-ENCODING = "utf-8"
-TEXT_EXTENSION = ".txt"
+# Configure logging
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler("ps_aux_parser.log"),
+        logging.StreamHandler()
+    ]
+)
 
 
 def get_ps_aux_output() -> str:
     """Fetch the output of the 'ps aux' command."""
+    logging.info("Fetching 'ps aux' output...")
     result = subprocess.run(["ps", "aux"], stdout=subprocess.PIPE, text=True, check=True)
+    logging.debug("'ps aux' output fetched successfully.")
     return result.stdout
 
 
 def write_output_to_csv(ps_aux_output: str, result_file: Path) -> None:
     """Write the 'ps aux' command output to a CSV file."""
+    logging.info(f"Writing 'ps aux' output to CSV file: {result_file}.csv")
     lines = ps_aux_output.splitlines()
-    # Standard ps aux headers: USER PID %CPU %MEM VSZ RSS TTY STAT START TIME COMMAND
     header = ['USER', 'PID', '%CPU', '%MEM', 'VSZ', 'RSS', 'TTY', 'STAT', 'START', 'TIME', 'COMMAND']
-    data = [line.split() for line in lines[1:]]
+    data = [line.split(maxsplit=len(header) - 1) for line in lines[1:]]
 
     with open(f"{result_file}.csv", "w", encoding="UTF8") as f:
         writer = csv.writer(f)
         writer.writerow(header)
         writer.writerows(data)
+    logging.info(f"'ps aux' output written to {result_file}.csv successfully.")
 
 
 def get_total_memory_in_mb() -> float:
@@ -44,72 +54,76 @@ def extract_application_name(command: str) -> str:
 
 def calculate_statistics(result_file: Path) -> Tuple:
     """Calculate and return various statistics from the CSV file."""
+    csv_file = f"{result_file}.csv"
+    logging.info(f"Calculating statistics from file: {result_file}.csv")
     total_cpu = total_memory = 0.0
     max_cpu, max_mem = 0.0, 0.0
     max_cpu_process, max_mem_process = "", ""
-    users = set()  # Using set to avoid duplicate user entries
+    users = set()
     processes_by_user = defaultdict(int)
     processes_by_application = defaultdict(lambda: {"memory": 0.0, "processes": 0})
     fleet_usage = 0.0
-    fleet_process_count = 0  # Track the number of Fleet processes
+    fleet_process_count = 0
 
-    csv_file = f"{result_file}.csv"
-    with open(csv_file, "r", encoding=ENCODING) as f:
-        csv_reader = csv.DictReader(f)
-        # Store all rows in memory to avoid file closure issues
-        rows = list(csv_reader)
-        for row in rows:
-            try:
-                cpu_usage = float(row["%CPU"])
-                mem_usage_mb = float(row["RSS"]) / 1024  # RSS is in KB, convert to MB
+    try:
+        with open(csv_file, "r", encoding="UTF8") as f:
+            csv_reader = csv.DictReader(f)
+            rows = list(csv_reader)
+            for row in rows:
+                try:
+                    cpu_usage = float(row["%CPU"])
+                    mem_usage_mb = float(row["RSS"]) / 1024
 
-                total_cpu += cpu_usage
-                total_memory += mem_usage_mb
-                processes_by_user[row["USER"]] += 1
-                users.add(row["USER"])
+                    total_cpu += cpu_usage
+                    total_memory += mem_usage_mb
+                    processes_by_user[row["USER"]] += 1
+                    users.add(row["USER"])
 
-                application_name = extract_application_name(row["COMMAND"])
-                if "fleet" in application_name.lower():
-                    fleet_usage += mem_usage_mb
-                    fleet_process_count += 1  # Increment Fleet process count
+                    application_name = extract_application_name(row["COMMAND"])
+                    if "fleet" in application_name.lower():
+                        fleet_usage += mem_usage_mb
+                        fleet_process_count += 1
 
-                processes_by_application[application_name]["memory"] += mem_usage_mb
-                processes_by_application[application_name]["processes"] += 1
+                    processes_by_application[application_name]["memory"] += mem_usage_mb
+                    processes_by_application[application_name]["processes"] += 1
 
-                if cpu_usage > max_cpu:
-                    max_cpu = cpu_usage
-                    max_cpu_process = row["COMMAND"]
+                    if cpu_usage > max_cpu:
+                        max_cpu = cpu_usage
+                        max_cpu_process = row["COMMAND"]
 
-                if mem_usage_mb > max_mem:
-                    max_mem = mem_usage_mb
-                    max_mem_process = row["COMMAND"]
-            except (KeyError, ValueError) as e:
-                print(f"Error processing row: {row}. Error: {e}")
-                continue
+                    if mem_usage_mb > max_mem:
+                        max_mem = mem_usage_mb
+                        max_mem_process = row["COMMAND"]
+                except (KeyError, ValueError) as e:
+                    logging.warning(f"Error processing row: {row}. Error: {e}")
+                    continue
 
-    # Find application with highest memory usage
-    max_app_name, max_app_stats = max(
-        processes_by_application.items(),
-        key=lambda item: item[1]["memory"],
-        default=("", {"memory": 0.0, "processes": 0}),
-    )
+        max_app_name, max_app_stats = max(
+            processes_by_application.items(),
+            key=lambda item: item[1]["memory"],
+            default=("", {"memory": 0.0, "processes": 0}),
+        )
 
-    return (
-        total_cpu,
-        total_memory,
-        len(users),
-        max_cpu_process,
-        max_cpu,
-        max_mem_process,
-        max_mem,
-        users,
-        processes_by_user,
-        max_app_name,
-        max_app_stats["memory"],
-        fleet_usage,
-        max_app_stats["processes"],
-        fleet_process_count,  # Use the correct Fleet process count
-    )
+        logging.info("Statistics calculated successfully.")
+        return (
+            total_cpu,
+            total_memory,
+            len(users),
+            max_cpu_process,
+            max_cpu,
+            max_mem_process,
+            max_mem,
+            users,
+            processes_by_user,
+            max_app_name,
+            max_app_stats["memory"],
+            fleet_usage,
+            max_app_stats["processes"],
+            fleet_process_count,
+        )
+    except FileNotFoundError as e:
+        logging.error(f"File not found: {csv_file}. Error: {e}")
+        raise
 
 
 def create_report(
@@ -155,8 +169,10 @@ def create_report(
 
 def write_report_to_file(report: str, result_file: str) -> None:
     """Write the report to a text file."""
+    logging.info(f"Writing report to file: {result_file}.txt")
     with open(f"{result_file}.txt", mode="w", encoding="UTF8") as f:
         f.write(report)
+    logging.info("Report written successfully.")
 
 
 def parse_custom_report(output: str) -> List[Dict[str, str]]:
@@ -168,15 +184,23 @@ def parse_custom_report(output: str) -> List[Dict[str, str]]:
 def main() -> None:
     """Main function for the script."""
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
+    Path(f"{timestamp}-system-scan")
+
+    logging.info("Starting the main function...")
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
     result_file = Path(f"{timestamp}-system-scan")
 
-    ps_aux_output = get_ps_aux_output()
-    write_output_to_csv(ps_aux_output, result_file)
+    try:
+        ps_aux_output = get_ps_aux_output()
+        write_output_to_csv(ps_aux_output, result_file)
 
-    stats = calculate_statistics(result_file)
-    report = create_report(*stats)
-    print(report)
-    write_report_to_file(report, str(result_file))
+        stats = calculate_statistics(result_file)
+        report = create_report(*stats)
+        logging.info("System report generated successfully.")
+        logging.debug(f"Report content:\n{report}")
+        write_report_to_file(report, str(result_file))
+    except Exception as e:
+        logging.error(f"An error occurred in the main function: {e}", exc_info=True)
 
 
 if __name__ == "__main__":

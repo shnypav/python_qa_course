@@ -164,7 +164,13 @@ default-bg
                     {% endif %}
                 </button>
             </form>
-            <div>
+            {% if error_message %}
+<div class="error-bg">
+    <p>{{ error_message }}</p>
+</div>
+{% endif %}
+
+<div>
                 {% if report %}
                 <table>
                     <thead>
