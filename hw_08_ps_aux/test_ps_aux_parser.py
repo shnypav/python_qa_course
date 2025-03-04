@@ -1,4 +1,6 @@
 # test_ps_aux_parser.py
+from datetime import datetime
+
 import pytest
 from unittest.mock import patch, mock_open
 from pathlib import Path
@@ -72,17 +74,20 @@ def test_calculate_statistics(mock_csv_file):
     ) = stats
 
     assert total_cpu == 15.0  # Total CPU
-    assert total_memory_mb == pytest.approx(15.0, rel=1e-1), f"Expected ~15.0, got {total_memory_mb}"  # Total memory in MB
+    assert total_memory_mb == pytest.approx(15.0,
+                                            rel=1e-1), f"Expected ~15.0, got {total_memory_mb}"  # Total memory in MB
     assert unique_users_count == 2  # Number of unique users
     assert max_cpu_process == "/usr/bin/java -jar app.jar"  # Max CPU process
     assert max_cpu_usage == 10.0  # Max CPU usage
     assert max_memory_process == "/usr/bin/java -jar app.jar"  # Max memory process
-    assert max_memory_usage_mb == pytest.approx(10.0, rel=1e-1), f"Expected ~10.0, got {max_memory_usage_mb}"  # Max memory usage in MB
+    assert max_memory_usage_mb == pytest.approx(10.0,
+                                                rel=1e-1), f"Expected ~10.0, got {max_memory_usage_mb}"  # Max memory usage in MB
 
 
 def test_extract_application_name():
     """Test extracting application name from a command."""
     command = "/usr/bin/python3 script.py"
+    today = datetime.utcnow().date()
     app_name = extract_application_name(command)
     assert app_name == "python3"
 
