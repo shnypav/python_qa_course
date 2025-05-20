@@ -12,14 +12,19 @@ class Rectangle(Figure):
 
     @property
     def perimeter(self):
-        print()
+        """
+        Calculate the perimeter of the rectangle.
+        
+        @return: Perimeter of the rectangle (2 * (a + b))
+        """
         return 2 * (self.side_a + self.side_b)
 
     @property
     def area(self) -> object:
         """
-
-        @return:
+        Calculate the area of the rectangle.
+        
+        @return: Area of the rectangle (a * b)
         """
         area = self.side_a * self.side_b
         return area

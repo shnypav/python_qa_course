@@ -20,13 +20,12 @@ def test_rectangle_name(create_rectangle):
     assert create_rectangle.name == "Rectangle"
 
 
-@pytest.mark.parametrize("side_a, side_b", [(-1, 1), (1, -1), (-1, -1)])
+@pytest.mark.parametrize("side_a, side_b", [(-1, 1), (1, -3), (-1, -1)])
 def test_create_rectangle_side_less_than_zero(side_a, side_b):
     with pytest.raises(ValueError) as error:
         Rectangle(side_a, side_b)
     assert error.type is ValueError
-    print("hello")
-    assert error.value.args[0] == "Rectangle sides should be > 0"
+    assert str(error.value) == "Rectangle sides should be > 0"
 
 
 @pytest.mark.parametrize("side_a, side_b", [("aaa", 3), ("", 1), (1, None)])

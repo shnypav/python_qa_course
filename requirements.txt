@@ -4,3 +4,4 @@ cerberus
 selenium
 webdriver-manager
 allure-pytest
+psutil
