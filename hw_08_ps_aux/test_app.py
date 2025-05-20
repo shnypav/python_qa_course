@@ -16,6 +16,7 @@ def client():
 @patch('app.generate_report')
 @patch('app.calculate_statistics')
 def test_index_get(mock_calculate_statistics, mock_generate_report, client):
+    print(mock_calculate_statistics)
     # Test GET request
     rv = client.get('/')
     assert rv.status_code == 200
