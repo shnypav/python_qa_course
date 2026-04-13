@@ -61,3 +61,30 @@ def test_05_sub_breed_images(breed, sub_breed):
     assert r.status_code == 200
     for image in result["message"]:
         assert f"{breed}-{sub_breed}" in image
+
+
+@pytest.mark.parametrize("breed", ["notabreed", "unicorn", "dragon"])
+def test_06_invalid_breed_returns_error(breed):
+    r = requests.get(f"https://dog.ceo/api/breed/{breed}/images")
+    result = r.json()
+    assert r.status_code == 404
+    assert result["status"] == "error"
+
+
+def test_07_all_breeds_list_structure():
+    r = requests.get("https://dog.ceo/api/breeds/list/all")
+    result = r.json()
+    assert r.status_code == 200
+    assert result["status"] == "success"
+    breeds = result["message"]
+    for known_breed in ["hound", "poodle", "collie", "akita"]:
+        assert known_breed in breeds
+
+
+@pytest.mark.parametrize("breed, sub_breed", [("hound", "afghan"), ("bulldog", "french")])
+def test_08_sub_breed_listed_in_breed(breed, sub_breed):
+    r = requests.get(f"https://dog.ceo/api/breed/{breed}/list")
+    result = r.json()
+    assert r.status_code == 200
+    assert result["status"] == "success"
+    assert sub_breed in result["message"]

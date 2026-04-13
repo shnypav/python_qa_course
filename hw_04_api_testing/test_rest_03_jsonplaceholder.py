@@ -59,3 +59,52 @@ def test_05_posts_by_user(user_id, posts_qty):
     result = r.json()
     assert r.status_code == 200
     assert len(result[0]) == posts_qty
+
+
+def test_06_put_post():
+    post_id = 1
+    updated = {"id": post_id, "title": "Updated title", "body": "Updated body", "userId": 1}
+    headers = {"Content-type": "application/json; charset=UTF-8"}
+    r = requests.put(
+        f"https://jsonplaceholder.typicode.com/posts/{post_id}",
+        json=updated,
+        headers=headers
+    )
+    result = r.json()
+    assert r.status_code == 200
+    assert result["title"] == updated["title"]
+    assert result["body"] == updated["body"]
+    assert result["id"] == post_id
+
+
+def test_07_patch_post():
+    post_id = 1
+    patch_data = {"title": "Patched title"}
+    headers = {"Content-type": "application/json; charset=UTF-8"}
+    r = requests.patch(
+        f"https://jsonplaceholder.typicode.com/posts/{post_id}",
+        json=patch_data,
+        headers=headers
+    )
+    result = r.json()
+    assert r.status_code == 200
+    assert result["title"] == patch_data["title"]
+    assert "body" in result
+
+
+@pytest.mark.parametrize("todo_id, completed", [(1, False), (2, False), (4, True)])
+def test_08_get_todo(todo_id, completed):
+    r = requests.get(f"https://jsonplaceholder.typicode.com/todos/{todo_id}")
+    result = r.json()
+    assert r.status_code == 200
+    assert result["id"] == todo_id
+    assert result["completed"] == completed
+
+
+@pytest.mark.parametrize("user_id", [1, 2, 3])
+def test_09_user_has_required_fields(user_id):
+    r = requests.get(f"https://jsonplaceholder.typicode.com/users/{user_id}")
+    result = r.json()
+    assert r.status_code == 200
+    for field in ["id", "name", "username", "email", "address", "phone", "website", "company"]:
+        assert field in result
