@@ -41,3 +41,17 @@ def test_04_description_review(browser, base_url):
 def test_05_image(browser, base_url):
     ItemPage(browser).open_url(base_url, ItemPage.NOKOND300)
     ItemPage(browser).element_presence(ItemPage.IMAGE)
+
+
+@allure.suite("Item's page testing")
+def test_06_price_displayed(browser, base_url):
+    ItemPage(browser).open_url(base_url, ItemPage.NOKOND300)
+    price = ItemPage(browser).get_element(ItemPage.PRICE)
+    assert price.text != "", "Price should not be empty"
+
+
+@allure.suite("Item's page testing")
+def test_07_product_tabs_count(browser, base_url):
+    ItemPage(browser).open_url(base_url, ItemPage.NOKOND300)
+    tabs = ItemPage(browser).get_all_elements(ItemPage.PRODUCT_TABS)
+    assert len(tabs) >= 2, "Item page should have at least Description and Reviews tabs"

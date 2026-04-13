@@ -46,3 +46,24 @@ def test_04_registration(browser, base_url):
     rp(browser).click_on_element(rp.AGREE)
     rp(browser).click_on_element(rp.SUBMIT)
     assert "Your Account Has Been Created!" in rp(browser).get_element(rp.SUCCESS).text
+
+
+@allure.suite("User page testing")
+@allure.description("Submit empty form and verify validation errors appear")
+def test_05_registration_missing_required_fields(browser, base_url):
+    page = rp(browser)
+    page.open_url(base_url, rp.REGISTRATION_LINK)
+    page.click_on_element(rp.SUBMIT)
+    errors = page.get_all_elements(rp.INPUT_ERROR)
+    assert len(errors) > 0, "Validation errors should appear when required fields are empty"
+
+
+@allure.suite("User page testing")
+@allure.description("Verify password and confirm password fields accept input")
+def test_06_password_fields_fillable(browser, base_url):
+    page = rp(browser)
+    page.open_url(base_url, rp.REGISTRATION_LINK)
+    page.fill_input_field(rp.PASSWORD, "secret123")
+    page.fill_input_field(rp.PASSWORD_CONFIRM, "secret123")
+    pwd = page.get_element(rp.PASSWORD)
+    assert pwd.get_attribute("type") == "password", "Password field type should be 'password'"

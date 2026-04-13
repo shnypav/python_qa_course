@@ -17,3 +17,4 @@ class RegistrationPage(BasePage):
     AGREE = (By.CSS_SELECTOR, "[name=agree]")
     SUBMIT = (By.CSS_SELECTOR, ".btn.btn-primary")
     SUCCESS = (By.CSS_SELECTOR, ".col-sm-9")
+    INPUT_ERROR = (By.CSS_SELECTOR, ".text-danger")

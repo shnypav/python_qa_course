@@ -42,3 +42,22 @@ def test_06_change_currency(browser):
     MainPage(browser).click_on_element(MainPage.CURRENCY)
     MainPage(browser).click_on_element(MainPage.GBP)
     assert MainPage(browser).get_element(MainPage.CURRENCY_I).text == "£"
+
+
+@allure.suite("Main page testing")
+@allure.severity(allure.severity_level.NORMAL)
+def test_07_logo(browser):
+    MainPage(browser).element_presence(MainPage.LOGO)
+
+
+@allure.suite("Main page testing")
+@allure.severity(allure.severity_level.NORMAL)
+def test_08_featured_products(browser):
+    elements = MainPage(browser).get_all_elements(MainPage.FEATURED_PRODUCTS)
+    assert len(elements) > 0, "No featured products on main page"
+
+
+@allure.suite("Main page testing")
+@allure.severity(allure.severity_level.MINOR)
+def test_09_footer(browser):
+    MainPage(browser).element_presence(MainPage.FOOTER)

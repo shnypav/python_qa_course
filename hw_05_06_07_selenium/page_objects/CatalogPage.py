@@ -12,3 +12,4 @@ class CatalogPage(BasePage):
     GRID_VIEW = (By.CSS_SELECTOR, "#grid-view")
     LIST_VIEW = (By.CSS_SELECTOR, "#list-view")
     SORTING = (By.CSS_SELECTOR, "#input-sort")
+    LIMIT = (By.CSS_SELECTOR, "#input-limit")
