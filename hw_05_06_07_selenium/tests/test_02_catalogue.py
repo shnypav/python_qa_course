@@ -44,3 +44,27 @@ def test_05_sort_by_list(browser, base_url):
     CatalogPage(browser).open_url(base_url, CatalogPage.MONITORS)
     sort_by = CatalogPage(browser).element_clickable(CatalogPage.SORTING)
     assert Select(sort_by).first_selected_option.text == "Default"
+
+
+@allure.suite("Catalogue testing")
+@allure.sub_suite("Catalogue sorting")
+@allure.title("Test to check number of sorting options")
+def test_06_sort_options_count(browser, base_url):
+    CatalogPage(browser).open_url(base_url, CatalogPage.MONITORS)
+    sort_by = CatalogPage(browser).element_clickable(CatalogPage.SORTING)
+    options = Select(sort_by).options
+    assert len(options) > 1, "Sort dropdown should have more than one option"
+
+
+@allure.suite("Catalogue testing")
+def test_07_limit_select_present(browser, base_url):
+    CatalogPage(browser).open_url(base_url, CatalogPage.MONITORS)
+    CatalogPage(browser).element_presence(CatalogPage.LIMIT)
+
+
+@allure.suite("Catalogue testing")
+def test_08_list_view_changes_layout(browser, base_url):
+    cp = CatalogPage(browser)
+    cp.open_url(base_url, CatalogPage.MONITORS)
+    cp.click_on_element(CatalogPage.LIST_VIEW)
+    cp.element_presence(CatalogPage.PRODUCTS)

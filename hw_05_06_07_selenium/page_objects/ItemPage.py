@@ -13,3 +13,5 @@ class ItemPage(BasePage):
     IMAGE = (By.CSS_SELECTOR, ".col-sm-8 img")
     REVIEWS_LINK = (By.PARTIAL_LINK_TEXT, "Reviews")
     DESCRIPTION_LINK = "Description"
+    PRICE = (By.CSS_SELECTOR, ".price")
+    PRODUCT_TABS = (By.CSS_SELECTOR, ".nav-tabs li")

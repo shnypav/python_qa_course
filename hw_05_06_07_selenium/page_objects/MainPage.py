@@ -13,6 +13,9 @@ class MainPage(BasePage):
     CURRENCY_I = (By.CSS_SELECTOR, "strong")
     SLIDESHOW = (By.CSS_SELECTOR, "[id=slideshow0]")
     NAVBAR = (By.CSS_SELECTOR, "ul.navbar-nav > li")
+    LOGO = (By.CSS_SELECTOR, "#logo")
+    FEATURED_PRODUCTS = (By.CSS_SELECTOR, "#featured .product-thumb")
+    FOOTER = (By.CSS_SELECTOR, "#footer")
 
     @allure.step
     def search_elements(self):
