@@ -179,3 +179,19 @@ def test_circle_str_and_repr():
     circle2 = Circle(10.5)
     assert str(circle2) == "Circle(radius=10.5)"
     assert repr(circle2) == "Circle(radius=10.5)"
+
+
+@pytest.mark.parametrize("op", ["__lt__", "__gt__", "__le__", "__ge__"])
+def test_circle_comparison_with_non_circle_raises_type_error(op):
+    """Comparing a Circle with a non-Circle object should raise TypeError"""
+    circle = Circle(5)
+    with pytest.raises(TypeError):
+        getattr(circle, op)("not a circle")
+
+
+def test_circle_not_equal_to_non_circle():
+    """A Circle should not be equal to objects of other types"""
+    circle = Circle(5)
+    assert circle != 5
+    assert circle != "Circle"
+    assert circle != None  # noqa: E711
