@@ -149,6 +149,13 @@ def test_very_large_values():
     assert square.perimeter == pytest.approx(expected_perimeter)
 
 
+def test_square_not_equal_to_rectangle_with_same_sides():
+    """Test that Square != Rectangle even when both have the same side lengths"""
+    square = Square(4)
+    rectangle = Rectangle(4, 4)
+    assert square != rectangle
+
+
 def test_square_is_rectangle_with_equal_sides():
     """Test that Square is a special case of Rectangle with equal sides"""
     # Create a square

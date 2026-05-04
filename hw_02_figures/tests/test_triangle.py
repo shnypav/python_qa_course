@@ -216,8 +216,47 @@ def test_add_area_with_rectangle():
 def test_add_area_with_invalid_object():
     """Test that adding area with an invalid object raises ValueError"""
     triangle = Triangle(3, 4, 5)
-    
+
     with pytest.raises(ValueError) as error:
         triangle.add_area("not a figure")
-    
+
     assert "Could not calculate area with argument given" in str(error.value)
+
+
+def test_triangle_add_area_with_square():
+    """Test adding area of a triangle with a square"""
+    from ..src.Square import Square
+    triangle = Triangle(3, 4, 5)  # area = 6
+    square = Square(4)             # area = 16
+
+    result = triangle.add_area(square)
+    expected = triangle.area + square.area
+
+    assert result == pytest.approx(expected)
+    assert isinstance(result, (int, float))
+
+
+def test_triangle_add_area_is_commutative():
+    """Test that add_area is commutative between triangle and rectangle"""
+    triangle = Triangle(3, 4, 5)
+    rectangle = Rectangle(2, 3)
+
+    assert triangle.add_area(rectangle) == pytest.approx(rectangle.add_area(triangle))
+
+
+def test_triangle_zero_side_raises_error():
+    """Test that creating a triangle with a zero side raises ValueError"""
+    with pytest.raises(ValueError):
+        Triangle(0, 4, 5)
+
+
+@pytest.mark.parametrize("a, b, c", [
+    (3, 4, 5),
+    (5, 12, 13),
+    (8, 15, 17),
+])
+def test_right_triangle_area_formula(a, b, c):
+    """Test right triangles satisfy a²+b²=c² and area = 0.5*a*b"""
+    triangle = Triangle(a, b, c)
+    assert triangle.a ** 2 + triangle.b ** 2 == pytest.approx(triangle.c ** 2)
+    assert triangle.area == pytest.approx(0.5 * a * b)
