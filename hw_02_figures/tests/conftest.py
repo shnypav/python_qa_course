@@ -1,9 +1,18 @@
+import logging
+
 import pytest
 
 from ..src.Circle import Circle
 from ..src.Triangle import Triangle
 from ..src.Rectangle import Rectangle
 from ..src.Square import Square
+
+
+def pytest_configure(config):
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    )
 
 
 @pytest.fixture()
