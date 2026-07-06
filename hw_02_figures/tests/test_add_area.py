@@ -34,3 +34,13 @@ def test_add_area_05(create_rectangle):
         create_rectangle.add_area(TempClass)
     assert error.type is ValueError
     assert error.value.args[0] == "Could not calculate area with argument given"
+
+
+def test_add_area_06(create_rhombus, create_trapezoid):
+    # default figures from conftest.py: rhombus = 20, trapezoid = 28
+    assert create_rhombus.add_area(create_trapezoid) == 48
+
+
+def test_add_area_07(create_ellipse, create_square):
+    # default figures from conftest.py: ellipse = 6 * pi, square = 1
+    assert create_ellipse.add_area(create_square) == pytest.approx(create_ellipse.area + 1)

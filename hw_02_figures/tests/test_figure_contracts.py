@@ -1,9 +1,12 @@
 import pytest
 
 from ..src.Circle import Circle
+from ..src.Ellipse import Ellipse
 from ..src.Figure import Figure
 from ..src.Rectangle import Rectangle
+from ..src.Rhombus import Rhombus
 from ..src.Square import Square
+from ..src.Trapezoid import Trapezoid
 from ..src.Triangle import Triangle
 
 
@@ -14,6 +17,9 @@ from ..src.Triangle import Triangle
         Rectangle(2, 3),
         Square(4),
         Triangle(3, 4, 5),
+        Rhombus(5, 4),
+        Trapezoid(10, 4, 4, 5, 5),
+        Ellipse(3, 2),
     ],
 )
 def test_concrete_figures_are_figure_instances(figure):
@@ -38,6 +44,9 @@ def test_figure_subclass_without_perimeter_raises_not_implemented():
         (Circle(3), Square(3)),
         (Square(4), Rectangle(4, 4)),
         (Triangle(3, 4, 5), (3, 4, 5)),
+        (Rhombus(5, 4), Square(5)),
+        (Trapezoid(10, 4, 4, 5, 5), Rectangle(10, 4)),
+        (Ellipse(3, 3), Circle(3)),
     ],
 )
 def test_figures_are_not_equal_to_different_types(left, right):
