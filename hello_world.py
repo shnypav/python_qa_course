@@ -1,3 +1,0 @@
-try:
-    foo = bar
-except
