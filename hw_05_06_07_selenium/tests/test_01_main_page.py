@@ -1,6 +1,9 @@
 import allure
+import pytest
 
 from page_objects.MainPage import MainPage
+
+pytestmark = pytest.mark.usefixtures("log_test_case")
 
 
 @allure.suite("Main page testing")

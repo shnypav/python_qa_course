@@ -1,6 +1,8 @@
 import pytest
 import requests
 
+pytestmark = pytest.mark.usefixtures("log_test_case")
+
 
 def test_01_get_posts():
     post_id = 22

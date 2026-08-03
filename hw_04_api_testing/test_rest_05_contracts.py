@@ -1,6 +1,8 @@
 import pytest
 import requests
 
+pytestmark = pytest.mark.usefixtures("log_test_case")
+
 
 def test_dog_api_unknown_breed_returns_error():
     r = requests.get("https://dog.ceo/api/breed/not-a-real-breed/images/random", timeout=10)

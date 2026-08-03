@@ -7,6 +7,8 @@ from allure_commons.types import AttachmentType
 from env import PASS
 from page_objects.AdminPage import AdminPage
 
+pytestmark = pytest.mark.usefixtures("log_test_case")
+
 
 @allure.suite("Admin page testing")
 def test_01_admin_page(browser, base_url):

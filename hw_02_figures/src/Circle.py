@@ -1,14 +1,18 @@
 from ..src.Figure import Figure
 from math import pi
 
+from .logging_config import logger
+
 
 class Circle(Figure):
     name = "Circle"
 
     def __init__(self, radius):
         if radius < 0:
+            logger.error("Invalid Circle radius: %r", radius)
             raise ValueError("Radius should be >= 0")
         self._radius = radius
+        logger.info("Created Circle with radius=%s", radius)
 
     @property
     def radius(self):
@@ -27,6 +31,7 @@ class Circle(Figure):
         @return: Area of the circle (pi * r^2)
         """
         area = pi * (self.radius ** 2)
+        logger.debug("Calculated Circle area for radius=%s: %s", self.radius, area)
         return area
 
     @property
@@ -37,6 +42,7 @@ class Circle(Figure):
         @return: Perimeter of the circle (2 * pi * r)
         """
         perimeter = 2 * pi * self.radius
+        logger.debug("Calculated Circle perimeter for radius=%s: %s", self.radius, perimeter)
         return perimeter
 
     @property
@@ -91,6 +97,7 @@ class Circle(Figure):
         @return: True if this circle's radius is less than the other's radius
         """
         if not isinstance(other, Circle):
+            logger.error("Cannot compare Circle with %s", type(other).__name__)
             raise TypeError("Cannot compare Circle with non-Circle object")
         return self.radius < other.radius
 
@@ -102,6 +109,7 @@ class Circle(Figure):
         @return: True if this circle's radius is greater than the other's radius
         """
         if not isinstance(other, Circle):
+            logger.error("Cannot compare Circle with %s", type(other).__name__)
             raise TypeError("Cannot compare Circle with non-Circle object")
         return self.radius > other.radius
 
@@ -113,6 +121,7 @@ class Circle(Figure):
         @return: True if this circle's radius is less than or equal to the other's radius
         """
         if not isinstance(other, Circle):
+            logger.error("Cannot compare Circle with %s", type(other).__name__)
             raise TypeError("Cannot compare Circle with non-Circle object")
         return self.radius <= other.radius
 
@@ -124,6 +133,7 @@ class Circle(Figure):
         @return: True if this circle's radius is greater than or equal to the other's radius
         """
         if not isinstance(other, Circle):
+            logger.error("Cannot compare Circle with %s", type(other).__name__)
             raise TypeError("Cannot compare Circle with non-Circle object")
         return self.radius >= other.radius
 
@@ -135,5 +145,8 @@ class Circle(Figure):
         @return: The sum of the areas
         """
         if not hasattr(figure, 'area'):
+            logger.error("Cannot add Circle area to invalid object: %r", figure)
             raise ValueError(f"Cannot add area of {figure} - it's not a valid figure")
-        return self.area + figure.area
+        total = self.area + figure.area
+        logger.info("Added Circle area %s to %s area %s: %s", self.area, figure, figure.area, total)
+        return total

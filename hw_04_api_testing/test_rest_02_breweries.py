@@ -1,6 +1,8 @@
 import pytest
 import requests
 
+pytestmark = pytest.mark.usefixtures("log_test_case")
+
 @pytest.mark.parametrize("field, search_string",
                          [("city", "oakland"), ("name", "crown")])
 def test_01_brewery_by_field(field, search_string):

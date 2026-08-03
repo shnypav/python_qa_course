@@ -5,6 +5,8 @@ import pytest
 from ..src.Circle import Circle
 from ..src.Figure import Figure
 
+pytestmark = pytest.mark.usefixtures("log_test_case")
+
 
 @pytest.mark.parametrize("radius, expected_area", [(0, 0), (10, 100 * pi), (2.5, (2.5 ** 2) * pi)])
 def test_circle_area(radius, expected_area):

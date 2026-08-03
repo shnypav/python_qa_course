@@ -4,6 +4,8 @@ from ..src.Triangle import Triangle
 from ..src.Circle import Circle
 from ..src.Rectangle import Rectangle
 
+pytestmark = pytest.mark.usefixtures("log_test_case")
+
 
 def test_triangle_add_area_with_another_triangle():
     """Test adding area of a triangle with another triangle"""

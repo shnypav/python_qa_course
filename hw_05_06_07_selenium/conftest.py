@@ -1,7 +1,7 @@
 import datetime
 import logging
 import os
-import time
+from pathlib import Path
 
 import allure
 import pytest
@@ -9,13 +9,13 @@ from allure_commons.types import AttachmentType
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.firefox.service import Service as FirefoxService
-from selenium.webdriver.opera.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
-from webdriver_manager.opera import OperaDriverManager
 
-DRIVERS = os.path.expanduser("~/Downloads")
-LOG_PATH = "../logs"
+LOGGER = logging.getLogger("selenium")
+PROJECT_DIR = Path(__file__).resolve().parent
+LOG_PATH = PROJECT_DIR.parent / "logs"
+ALLURE_RESULTS_PATH = PROJECT_DIR / "allure-results"
 
 
 def pytest_addoption(parser):
@@ -28,67 +28,81 @@ def pytest_addoption(parser):
 
 def choose_driver(request):
     browser = request.config.getoption("--browser")
+    executor = request.config.getoption("executor")
+    LOGGER.info("Creating %s driver for executor %s", browser, executor)
 
-    if request.config.getoption("executor") == "local":
+    try:
+        if executor == "local":
 
-        if browser == "chrome":
-            driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
-        elif browser == "firefox":
-            driver = webdriver.Firefox(service=FirefoxService(GeckoDriverManager().install()))
-        elif browser == "opera":
-            driver = webdriver.Opera(executable_path=OperaDriverManager().install())
+            if browser == "chrome":
+                driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+            elif browser == "firefox":
+                driver = webdriver.Firefox(service=FirefoxService(GeckoDriverManager().install()))
+            else:
+                LOGGER.error("Unsupported browser requested: %s", browser)
+                raise ValueError("Browser is not supported")
         else:
-            raise Exception("Browser is not supported")
+            browser_ver = request.config.getoption("--browser_ver")
+            if browser == "chrome":
+                options = webdriver.ChromeOptions()
+            elif browser == "firefox":
+                options = webdriver.FirefoxOptions()
+            else:
+                LOGGER.error("Unsupported browser requested: %s", browser)
+                raise ValueError("Browser is not supported")
+            driver = webdriver.Remote(
+                command_executor=f"http://{executor}:4444/wd/hub",
+                desired_capabilities={
+                    "browserName": browser,
+                    "browserVersion": browser_ver,
+                    "selenoid:options": {"enableVNC": True, "enableVideo": False},
+                },
+                options=options,
+            )
+            driver.maximize_window()
+    except Exception:
+        LOGGER.exception("Failed to create %s driver for executor %s", browser, executor)
+        raise
 
-    else:
-        browser_ver = request.config.getoption("--browser_ver")
-        if browser == "chrome":
-            options = webdriver.ChromeOptions()
-        elif browser == "firefox":
-            options = webdriver.FirefoxOptions()
-        elif browser == "opera":
-            options = Options()
-        else:
-            raise Exception("Browser is not supported")
-        driver = webdriver.Remote(
-            command_executor=f"http://{request.config.getoption('executor')}:4444/wd/hub",
-            desired_capabilities={
-                "browserName": browser,
-                "browserVersion": browser_ver,
-                "selenoid:options": {
-                    "enableVNC": True,
-                    "enableVideo": False
-                }
-            },
-            options=options
-        )
-        driver.maximize_window()
-
+    LOGGER.info("Created %s driver", browser)
     return driver
 
 
+@pytest.fixture(scope="session", autouse=True)
+def configure_logging(request):
+    LOG_PATH.mkdir(exist_ok=True)
+    log_file = LOG_PATH / f"hw_05_06_07_selenium_{datetime.datetime.now():%Y%m%d_%H%M%S_%f}.log"
+    handler = logging.FileHandler(log_file, encoding="utf-8")
+    handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(name)s %(message)s"))
+    root_logger = logging.getLogger("selenium")
+    root_logger.setLevel(request.config.getoption("--log_level").upper())
+    root_logger.addHandler(handler)
+    LOGGER.info("Selenium logging configured: %s", log_file)
+    yield
+    root_logger.removeHandler(handler)
+    handler.close()
+
+
 @pytest.fixture(scope="session")
-def browser(request):
+def browser(request, configure_logging):
     driver = choose_driver(request)
-    driver.get(request.config.getoption("--url"))
+    base_url = request.config.getoption("--url")
+    try:
+        LOGGER.info("Opening initial URL: %s", base_url)
+        driver.get(base_url)
+    except Exception:
+        LOGGER.exception("Failed to open initial URL: %s", base_url)
+        driver.quit()
+        raise
     log_level = request.config.getoption("--log_level")
-    test_name = request.node.name
-
-    if not os.path.exists(os.path.join(os.getcwd(), LOG_PATH)):
-        os.mkdir(LOG_PATH)
-
-    handler = logging.FileHandler(filename=f"{LOG_PATH}/log_{datetime.date.today()}.log", encoding="utf-8")
-    handler.setFormatter(logging.Formatter(fmt="%(asctime)s %(levelname)s %(name)s %(message)s"))
-    logger = logging.getLogger(name="Browser")
-    logger.addHandler(handler)
-    logger.setLevel(level=log_level)
-    logger.info(f"Test {test_name} is started in browser {request.config.getoption('--browser')}")
-
     driver.log_level = log_level
-    driver.test_name = test_name
 
     yield driver
-    driver.quit()
+    try:
+        LOGGER.info("Quitting browser driver")
+        driver.quit()
+    except Exception:
+        LOGGER.exception("Failed to quit browser driver")
 
 
 @pytest.fixture(scope="session")
@@ -104,9 +118,11 @@ def get_environment(pytestconfig, request, browser):
         "Shell": os.getenv("SHELL")
     }
 
-    with open(f"../allure-results/environment.properties", "w") as f:
+    ALLURE_RESULTS_PATH.mkdir(exist_ok=True)
+    with (ALLURE_RESULTS_PATH / "environment.properties").open("w", encoding="utf-8") as f:
         env_props = '\n'.join([f'{k}={v}' for k, v in props.items()])
         f.write(env_props)
+    LOGGER.info("Wrote Allure environment properties")
 
 
 # set up a hook to be able to check if a test has failed
@@ -123,21 +139,31 @@ def pytest_runtest_makereport(item):
 
 # check if a test has failed
 @pytest.fixture(scope="function", autouse=True)
+def log_test_case(request):
+    parameters = getattr(request.node, "callspec", None)
+    LOGGER.info("Test started: %s; parameters=%s", request.node.nodeid, getattr(parameters, "params", {}))
+    yield
+    LOGGER.info("Test finished: %s", request.node.nodeid)
+
+
+@pytest.fixture(scope="function", autouse=True)
 def test_failed_check(request, browser):
     yield
     # request.node is an "item" because we use the default
     # "function" scope
     if request.node.rep_setup.failed:
-        print("setting up a test failed!", request.node.nodeid)
+        LOGGER.error("Test setup failed: %s", request.node.nodeid)
     elif request.node.rep_setup.passed:
         if request.node.rep_call.failed:
             take_screenshot(browser, request.node.nodeid)
-            print("executing test failed", request.node.nodeid)
+            LOGGER.error("Test execution failed: %s", request.node.nodeid)
 
 
 # make a screenshot with a name of the test, date and time
 def take_screenshot(browser, nodeid):
-    time.sleep(1)
-
-    allure.attach(browser.get_screenshot_as_png(), name=f"{nodeid}_screenshot_{datetime.datetime.now()}",
-                  attachment_type=AttachmentType.PNG)
+    try:
+        screenshot = browser.get_screenshot_as_png()
+        allure.attach(screenshot, name=f"{nodeid}_screenshot_{datetime.datetime.now()}", attachment_type=AttachmentType.PNG)
+        LOGGER.info("Attached screenshot for failed test: %s", nodeid)
+    except Exception:
+        LOGGER.exception("Failed to capture screenshot for test: %s", nodeid)

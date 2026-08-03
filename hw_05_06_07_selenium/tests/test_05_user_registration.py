@@ -2,8 +2,11 @@ import random
 import string
 
 import allure
+import pytest
 
 from page_objects.RegistrationPage import RegistrationPage as rp
+
+pytestmark = pytest.mark.usefixtures("log_test_case")
 
 
 @allure.suite("User page testing")

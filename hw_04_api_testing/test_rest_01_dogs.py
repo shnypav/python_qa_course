@@ -2,6 +2,8 @@ import pytest
 import requests
 from cerberus import Validator
 
+pytestmark = pytest.mark.usefixtures("log_test_case")
+
 
 @pytest.mark.parametrize("url", ["https://dog.ceo/api/breeds/list/all",
                                  "https://dog.ceo/api/breeds/image/random",

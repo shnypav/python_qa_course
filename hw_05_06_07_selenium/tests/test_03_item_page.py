@@ -1,6 +1,9 @@
 import allure
+import pytest
 
 from page_objects.ItemPage import ItemPage
+
+pytestmark = pytest.mark.usefixtures("log_test_case")
 
 
 @allure.suite("Item's page testing")

@@ -1,7 +1,10 @@
 import allure
+import pytest
 from selenium.webdriver.support.select import Select
 
 from page_objects.CatalogPage import CatalogPage
+
+pytestmark = pytest.mark.usefixtures("log_test_case")
 
 
 @allure.suite("Catalogue testing")

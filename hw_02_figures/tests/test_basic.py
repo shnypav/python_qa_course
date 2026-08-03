@@ -4,6 +4,8 @@ from ..src.Figure import Figure
 from ..src.Rectangle import Rectangle
 from ..src.Circle import Circle
 
+pytestmark = pytest.mark.usefixtures("log_test_case")
+
 
 def test_new_class():
     with pytest.raises(TypeError):

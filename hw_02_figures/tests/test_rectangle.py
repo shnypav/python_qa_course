@@ -6,6 +6,8 @@ from ..src.Square import Square
 from ..src.Triangle import Triangle
 from ..src.Figure import Figure
 
+pytestmark = pytest.mark.usefixtures("log_test_case")
+
 
 @pytest.mark.parametrize("side_a, side_b, expected_perimeter",
                          [(2, 3, (2 + 3) * 2), (0, 0, 0), (1.2, 3.5, (1.2 + 3.5) * 2)])

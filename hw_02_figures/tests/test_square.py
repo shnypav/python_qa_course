@@ -5,6 +5,8 @@ from ..src.Rectangle import Rectangle
 from ..src.Circle import Circle
 from ..src.Triangle import Triangle
 
+pytestmark = pytest.mark.usefixtures("log_test_case")
+
 
 @pytest.mark.parametrize("side, expected_perimeter", [(0, 0), (2, 2 * 4)])
 def test_square_perimeter(side, expected_perimeter):

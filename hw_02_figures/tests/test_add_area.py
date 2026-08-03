@@ -2,6 +2,8 @@ import pytest
 
 from ..src.Rectangle import Rectangle
 
+pytestmark = pytest.mark.usefixtures("log_test_case")
+
 
 class TempClass:
     pass

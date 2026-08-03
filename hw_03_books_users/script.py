@@ -1,51 +1,109 @@
 import csv
 import json
+import logging
+from datetime import datetime
+from pathlib import Path
 
-# read users from file into users
-with open("users.json", "r") as file_users:
-    users = json.load(file_users)
 
-# we need not all fields from initial json, but some specific, so filter them
-users_with_fields_required = []
-for user in users:
-    temp_dict = {"name": user.get("name"), "gender": user.get("gender"), "address": user.get("address"),
-                 "age": user.get("age")}
-    users_with_fields_required.append(temp_dict)
+LOGGER = logging.getLogger(__name__)
+BASE_DIR = Path(__file__).resolve().parent
+LOG_DIR = BASE_DIR.parent / "logs"
 
-# read books from file and store it to all_books
-all_books = []
-with open("books.csv", "r") as file_books:
-    books = csv.DictReader(file_books)
 
-    for book in books:
-        all_books.append(book)
+def configure_logging():
+    LOG_DIR.mkdir(exist_ok=True)
+    log_file = LOG_DIR / f"hw_03_books_users_{datetime.now():%Y%m%d_%H%M%S_%f}.log"
+    formatter = logging.Formatter("%(asctime)s %(levelname)s %(name)s %(message)s")
+    file_handler = logging.FileHandler(log_file, encoding="utf-8")
+    console_handler = logging.StreamHandler()
+    file_handler.setFormatter(formatter)
+    console_handler.setFormatter(formatter)
+    LOGGER.setLevel(logging.DEBUG)
+    LOGGER.propagate = False
+    LOGGER.addHandler(file_handler)
+    LOGGER.addHandler(console_handler)
+    LOGGER.info("Writing books/users logs to %s", log_file)
+    return file_handler, console_handler
 
-# setting up generator "books_gen"
-books_gen = (book for book in all_books)
 
-# list to store books for each user
-user_books = []
-
-# main part to allocate all books through the users
-while True:
+def load_users(path):
+    """Load the source users and keep only fields required by the task."""
     try:
-        for user in users_with_fields_required:
-            try:
-                # to check if the user already has any books and if not — add empty "books"
-                user_books = user["books"]
-            except KeyError:
-                user["books"] = []
-            # add next book from generator to current user's books
-            user_books.append(next(books_gen))
-            user["books"] = user_books
-            user_books = []
+        with path.open("r", encoding="utf-8") as file_users:
+            users = json.load(file_users)
+    except (OSError, json.JSONDecodeError):
+        LOGGER.exception("Failed to read users from %s", path)
+        raise
 
-    except StopIteration:
-        break
+    if not isinstance(users, list):
+        LOGGER.error("Users source %s must contain a JSON list, got %s", path, type(users).__name__)
+        raise ValueError("Users source must contain a JSON list")
 
-# create new json users_with_books_json
-users_with_books_json = json.dumps(users_with_fields_required, indent=4)
+    filtered_users = []
+    for index, user in enumerate(users):
+        if not isinstance(user, dict):
+            LOGGER.error("User at index %s is not an object: %r", index, user)
+            raise ValueError(f"User at index {index} must be an object")
+        filtered_users.append({field: user.get(field) for field in ("name", "gender", "address", "age")})
 
-# write it to file
-with open("result.json", "w") as file:
-    file.write(users_with_books_json)
+    LOGGER.info("Loaded and filtered %s users from %s", len(filtered_users), path)
+    return filtered_users
+
+
+def load_books(path):
+    """Load all books from the source CSV file."""
+    try:
+        with path.open("r", encoding="utf-8", newline="") as file_books:
+            books = list(csv.DictReader(file_books))
+    except (OSError, csv.Error):
+        LOGGER.exception("Failed to read books from %s", path)
+        raise
+
+    LOGGER.info("Loaded %s books from %s", len(books), path)
+    return books
+
+
+def assign_books(users, books):
+    """Distribute books round-robin, preserving the original assignment order."""
+    if not users:
+        if books:
+            LOGGER.error("Cannot assign %s books because there are no users", len(books))
+            raise ValueError("Cannot assign books without users")
+        return users
+
+    for user in users:
+        user["books"] = []
+
+    for book_index, book in enumerate(books):
+        user = users[book_index % len(users)]
+        user["books"].append(book)
+        LOGGER.debug("Assigned book %s to user %s", book.get("Title", book_index), user.get("name"))
+
+    LOGGER.info("Assigned %s books across %s users", len(books), len(users))
+    return users
+
+
+def write_result(path, users):
+    try:
+        with path.open("w", encoding="utf-8") as result_file:
+            json.dump(users, result_file, indent=4, ensure_ascii=False)
+    except (OSError, TypeError):
+        LOGGER.exception("Failed to write result to %s", path)
+        raise
+    LOGGER.info("Wrote %s users with books to %s", len(users), path)
+
+
+def main():
+    handlers = configure_logging()
+    try:
+        users = load_users(BASE_DIR / "users.json")
+        books = load_books(BASE_DIR / "books.csv")
+        write_result(BASE_DIR / "result.json", assign_books(users, books))
+    finally:
+        for handler in handlers:
+            LOGGER.removeHandler(handler)
+            handler.close()
+
+
+if __name__ == "__main__":
+    main()

@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime, timezone
 from pathlib import Path
 from time import perf_counter
@@ -11,6 +12,9 @@ from ..src.Square import Square
 
 
 TEST_RUN_LOG = Path(__file__).resolve().parents[1] / "test_run.log"
+LOGGER = logging.getLogger("hw_02_figures.tests")
+PROJECT_LOGGER = logging.getLogger("hw_02_figures")
+LOG_DIR = Path(__file__).resolve().parents[2] / "logs"
 
 
 @pytest.hookimpl(tryfirst=True)
@@ -35,6 +39,28 @@ def pytest_sessionfinish(session, exitstatus):
             f"skipped: {len(stats.get('skipped', []))} | "
             f"duration: {elapsed_seconds:.6f}s\n"
         )
+
+
+@pytest.fixture(scope="session", autouse=True)
+def configure_file_logging():
+    LOG_DIR.mkdir(exist_ok=True)
+    log_file = LOG_DIR / f"hw_02_figures_{datetime.now():%Y%m%d_%H%M%S_%f}.log"
+    handler = logging.FileHandler(log_file, encoding="utf-8")
+    handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(name)s %(message)s"))
+    PROJECT_LOGGER.setLevel(logging.DEBUG)
+    PROJECT_LOGGER.addHandler(handler)
+    LOGGER.info("Writing test logs to %s", log_file)
+    yield
+    PROJECT_LOGGER.removeHandler(handler)
+    handler.close()
+
+
+@pytest.fixture
+def log_test_case(request):
+    parameters = getattr(request.node, "callspec", None)
+    LOGGER.info("Test started: %s; parameters=%s", request.node.nodeid, getattr(parameters, "params", {}))
+    yield
+    LOGGER.info("Test finished: %s", request.node.nodeid)
 
 
 @pytest.fixture()

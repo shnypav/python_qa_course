@@ -5,6 +5,8 @@ from ..src.Rectangle import Rectangle
 from ..src.Square import Square
 from ..src.Triangle import Triangle
 
+pytestmark = pytest.mark.usefixtures("log_test_case")
+
 
 @pytest.mark.parametrize(
     "sides",

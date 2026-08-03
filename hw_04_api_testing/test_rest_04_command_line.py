@@ -1,4 +1,7 @@
+import pytest
 import requests
+
+pytestmark = pytest.mark.usefixtures("log_test_case")
 
 
 def test_answer(url_given, status_given):

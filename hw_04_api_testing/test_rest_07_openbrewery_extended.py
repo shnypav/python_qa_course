@@ -1,6 +1,8 @@
 import pytest
 import requests
 
+pytestmark = pytest.mark.usefixtures("log_test_case")
+
 BASE_URL = "https://api.openbrewerydb.org/v1/breweries"
 
 

@@ -1,4 +1,5 @@
 from ..src.Rectangle import Rectangle
+from .logging_config import logger
 
 
 class Square(Rectangle):
@@ -6,6 +7,7 @@ class Square(Rectangle):
 
     def __init__(self, side):
         if side < 0:
+            logger.error("Invalid Square side: %r", side)
             raise ValueError("Rectangle sides should be > 0")
         super().__init__(side_a=side, side_b=side)
     

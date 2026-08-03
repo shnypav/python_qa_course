@@ -2,6 +2,8 @@ import pytest
 import requests
 from cerberus import Validator
 
+pytestmark = pytest.mark.usefixtures("log_test_case")
+
 BASE_URL = "https://jsonplaceholder.typicode.com"
 
 
