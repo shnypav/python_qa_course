@@ -33,7 +33,7 @@ def pytest_sessionfinish(session, exitstatus):
             f"passed: {len(stats.get('passed', []))} | "
             f"failed: {len(stats.get('failed', []))} | "
             f"skipped: {len(stats.get('skipped', []))} | "
-            f"duration: {elapsed_seconds:.3f}s\n"
+            f"duration: {elapsed_seconds:.6f}s\n"
         )
 
 
