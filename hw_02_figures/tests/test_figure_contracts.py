@@ -3,7 +3,9 @@ import pytest
 from ..src.Annulus import Annulus
 from ..src.Circle import Circle
 from ..src.Figure import Figure
+from ..src.Parallelogram import Parallelogram
 from ..src.Rectangle import Rectangle
+from ..src.RegularPolygon import RegularPolygon
 from ..src.Square import Square
 from ..src.Trapezoid import Trapezoid
 from ..src.Triangle import Triangle
@@ -20,6 +22,8 @@ pytestmark = pytest.mark.usefixtures("log_test_case")
         Triangle(3, 4, 5),
         Trapezoid(10, 4, 5, 5, 4),
         Annulus(3, 1),
+        Parallelogram(4, 3, 30),
+        RegularPolygon(6, 2),
     ],
 )
 def test_concrete_figures_are_figure_instances(figure):
