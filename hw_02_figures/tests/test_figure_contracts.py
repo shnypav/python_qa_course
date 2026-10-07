@@ -1,9 +1,11 @@
 import pytest
 
+from ..src.Annulus import Annulus
 from ..src.Circle import Circle
 from ..src.Figure import Figure
 from ..src.Rectangle import Rectangle
 from ..src.Square import Square
+from ..src.Trapezoid import Trapezoid
 from ..src.Triangle import Triangle
 
 pytestmark = pytest.mark.usefixtures("log_test_case")
@@ -16,6 +18,8 @@ pytestmark = pytest.mark.usefixtures("log_test_case")
         Rectangle(2, 3),
         Square(4),
         Triangle(3, 4, 5),
+        Trapezoid(10, 4, 5, 5, 4),
+        Annulus(3, 1),
     ],
 )
 def test_concrete_figures_are_figure_instances(figure):
