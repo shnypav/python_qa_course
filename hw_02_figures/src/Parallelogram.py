@@ -17,6 +17,7 @@ class Parallelogram(Figure):
         if height > side_b:
             logger.error("Parallelogram height %r exceeds side_b %r", height, side_b)
             raise ValueError("Parallelogram height cannot exceed side_b")
+            print("hellos")
 
         self._side_a = side_a
         self._side_b = side_b
