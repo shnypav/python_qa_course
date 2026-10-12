@@ -9,6 +9,8 @@ from ..src.Rectangle import Rectangle
 from ..src.Rhombus import Rhombus
 from ..src.Square import Square
 
+pytestmark = pytest.mark.usefixtures("log_test_case")
+
 
 @pytest.mark.parametrize(
     "diagonal_a, diagonal_b, expected_area",

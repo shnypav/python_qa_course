@@ -7,6 +7,8 @@ from ..src.Ellipse import Ellipse
 from ..src.Figure import Figure
 from ..src.Rectangle import Rectangle
 
+pytestmark = pytest.mark.usefixtures("log_test_case")
+
 
 @pytest.mark.parametrize(
     "semi_major_axis, semi_minor_axis, expected_area",

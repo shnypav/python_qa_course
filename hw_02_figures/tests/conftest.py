@@ -37,6 +37,7 @@ def pytest_sessionfinish(session, exitstatus):
             f"passed: {len(stats.get('passed', []))} | "
             f"failed: {len(stats.get('failed', []))} | "
             f"skipped: {len(stats.get('skipped', []))} | "
+            f"errors: {len(stats.get('error', []))} | "
             f"duration: {elapsed_seconds:.6f}s\n"
         )
 
@@ -55,12 +56,34 @@ def configure_file_logging():
     handler.close()
 
 
+@pytest.hookimpl(hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    """Attach each phase report to the test item so fixtures can log the outcome."""
+    outcome = yield
+    report = outcome.get_result()
+    setattr(item, f"rep_{report.when}", report)
+
+
 @pytest.fixture
 def log_test_case(request):
     parameters = getattr(request.node, "callspec", None)
     LOGGER.info("Test started: %s; parameters=%s", request.node.nodeid, getattr(parameters, "params", {}))
+    started_at = perf_counter()
     yield
-    LOGGER.info("Test finished: %s", request.node.nodeid)
+    duration = perf_counter() - started_at
+    report = getattr(request.node, "rep_call", None)
+    if report is None:
+        LOGGER.warning("Test finished: %s; outcome=not run; duration=%.6fs", request.node.nodeid, duration)
+    elif report.failed:
+        failure = report.longreprtext.strip().splitlines()
+        LOGGER.error(
+            "Test finished: %s; outcome=failed; duration=%.6fs; reason=%s",
+            request.node.nodeid,
+            duration,
+            failure[-1] if failure else "unknown",
+        )
+    else:
+        LOGGER.info("Test finished: %s; outcome=%s; duration=%.6fs", request.node.nodeid, report.outcome, duration)
 
 
 @pytest.fixture()
