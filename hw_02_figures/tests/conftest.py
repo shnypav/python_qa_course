@@ -61,6 +61,7 @@ def pytest_runtest_makereport(item, call):
     """Attach each phase report to the test item so fixtures can log the outcome."""
     outcome = yield
     report = outcome.get_result()
+    print(report)
     setattr(item, f"rep_{report.when}", report)
 
 
