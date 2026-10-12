@@ -12,7 +12,7 @@ LOG_DIR = BASE_DIR.parent / "logs"
 
 def configure_logging():
     LOG_DIR.mkdir(exist_ok=True)
-    log_file = LOG_DIR / f"hw_03_books_users_{datetime.now():%Y%m%d_%H%M%S_%f}.log"
+    print("hello")
     formatter = logging.Formatter("%(asctime)s %(levelname)s %(name)s %(message)s")
     file_handler = logging.FileHandler(log_file, encoding="utf-8")
     console_handler = logging.StreamHandler()
