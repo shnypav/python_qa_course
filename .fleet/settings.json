@@ -1,3 +1,116 @@
 {
-    "autoSave": "OnFocus"
+    //    "ff.adaptiveLayout": true,
+    "ff.sessionsImport": true,
+    //    "ai.show.available.repositories.for.new.task": true,
+    //    "markdown.wysiwyg.editor": false,
+    //    "internalMode": true,
+    //    "editor.showProblemMarkup": true,
+    "ai.acp.transport.recording.enabled": true,
+    "ai.agent.prevent.sleep.with.active.tasks": true,
+    "git.revert.confirm": false,
+    "goto_panel.showShortcuts": true,
+    "goto_panel.showShortcuts": true,
+    "theme.default.frostedGlassEffect": true,
+    "ai.chat.suggestions.new.task.enabled": true,
+    "editor.showAiPrompt": true,
+    "editor.renderRunInGutter": true,
+    "ai.mcp.launch.workspace.servers": true,
+    "terminal.clearTerminalOnCmdK": true,
+    "editor.lineSpacing": 1.7,
+    "showEmptyStateOnLastClosedWindow": true,
+    "files.exclude": [],
+    "editor.showScrollbarMarks": false,
+    "editor.previewTab": false,
+    "completion.inline.highlighting.enabled": true,
+    "theme.default.mode": "Light",
+    "theme.custom.themeId": "Air Theme Generator Tinted",
+    "editor.caretShape": "VerticalThin",
+    "theme.default.syncWithOS": true,
+    "theme.default.colorizeBackground": true,
+    "terminal.caretShape": "VerticalThin",
+    "terminal.fontFeatures": [
+        "zero",
+        "ss00",
+        "ss02"
+    ],
+    "editor.renderWhitespace": "None",
+    "ai.chat.send.shortcut": "RETURN",
+    "editor.fontSize": 13.0,
+    "autoSave.delay": 100,
+    "rename.selectOnRename": false,
+    "editor.hoverTooltipDelayMs": 200,
+    "editor.tabLimit": 10,
+    "docker.executable.path": "",
+    "editor.showInlayHints": true,
+    "ai.mcp.enabled": true,
+    "ff.openWorkspaceInIde": false,
+    "editor.showIndentGuides": true,
+    "terminal.profiles": [
+        {
+            "name": "T1",
+            "program": "/bin/zsh"
+        },
+        {
+            "name": "nu",
+            "program": "nu"
+        },
+        {
+            "name": "Fish",
+            "program": "fish"
+        }
+    ],
+    "editor.honorCamelHumps": false,
+    "terminal.profile.default": "system",
+    "terminal.enableFocusEditorOnEsc": true,
+    "editor.formatOnSave": true,
+    "terminal.lineSpacing": 1.5,
+    "createScratchOnNewFile": true,
+    "editor.tabSize": 4,
+    "editor.lineNumbers": "On",
+    "useSystemFileDialog": true,
+    "editor.ligatures": true,
+    "editor.showProblemMarkup": false,
+    "ff.expandGitDiffByDefault": false,
+    "editor.alwaysShowVerticalScrollbar": false,
+    "warn.before.quitting": false,
+    "vimEmulationEnabled": false,
+    "editor.alwaysShowHorizontalScrollbar": false,
+    "editor.fontFeatures": [
+        "zero",
+        "ss00",
+        "ss02"
+    ],
+    "editor.showVisualGuides": true,
+    "editor.indentStyle": "Spaces",
+    "theme.type": "Default",
+    "editor.guideToSoftWrapBy": 0,
+    "editor.showStickyLines": true,
+    "theme.default.accentColor": "Blue",
+    "editor.showCodeVision": true,
+    "terminal.fontFamily": "JetBrainsMono Nerd Font",
+    "autoSave": "OnFocus",
+    "files.openFileMode": "singleClick",
+    "zoomLevel": 0.95,
+    "editor.caretSmoothAnimation": true,
+    "java.runtimes": [
+        {
+            "path": "/Users/Pavel.Shnyrin/.sdkman/candidates/java/25.0.2-tem/bin",
+            "name": "bin"
+        }
+    ],
+    "editor.caretBlinkingEnabled": true,
+    "showShortcuts": false,
+    "git.autoFetch": false,
+    "editor.stickyLinesMaxCount": 15,
+    "terminal.fontSize": 12,
+    "rust-analyzer.rustfmt.extraArgs": [
+        "+nightly"
+    ],
+    "editor.fontFamily": "JetBrainsMono Nerd Font",
+    "ai.tasks.autocommit.enabled": true,
+    "ai.review.autoOpenTaskChanges": "OnFirstFileUpdate",
+    "ai.dictation.model.id": "medium",
+    "editor.softWrapEnabled": false,
+    "fus.event.monitor.enable.validation": "ALL",
+    "keymap": "air"
 }

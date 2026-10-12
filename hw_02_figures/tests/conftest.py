@@ -15,12 +15,17 @@ TEST_RUN_LOG = Path(__file__).resolve().parents[1] / "test_run.log"
 LOGGER = logging.getLogger("hw_02_figures.tests")
 PROJECT_LOGGER = logging.getLogger("hw_02_figures")
 LOG_DIR = Path(__file__).resolve().parents[2] / "logs"
+SESSION_START_TIME = pytest.StashKey[float]()
 
 
-@pytest.hookimpl(tryfirst=True)
-def pytest_sessionstart(session):
-    """Store a monotonic start time for the complete pytest session."""
-    session._figures_test_start_time = perf_counter()
+def pytest_configure(config):
+    """Store a monotonic start time for the complete pytest session.
+
+    pytest_configure is a historic hook, so it is replayed for this conftest even when it is
+    imported during collection (e.g. plain ``pytest`` from the repo root). pytest_sessionstart
+    has already fired by then and would never run here.
+    """
+    config.stash[SESSION_START_TIME] = perf_counter()
 
 
 @pytest.hookimpl(trylast=True)
@@ -28,7 +33,7 @@ def pytest_sessionfinish(session, exitstatus):
     """Append the test outcome summary and elapsed time after every run."""
     terminal_reporter = session.config.pluginmanager.get_plugin("terminalreporter")
     stats = terminal_reporter.stats if terminal_reporter is not None else {}
-    elapsed_seconds = perf_counter() - session._figures_test_start_time
+    elapsed_seconds = perf_counter() - session.config.stash[SESSION_START_TIME]
 
     TEST_RUN_LOG.parent.mkdir(parents=True, exist_ok=True)
     with TEST_RUN_LOG.open("a", encoding="utf-8") as log_file:
