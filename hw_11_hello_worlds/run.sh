@@ -22,13 +22,29 @@ install_package() {
         manager=pacman
     elif command -v zypper >/dev/null 2>&1; then
         manager=zypper
+    elif command -v brew >/dev/null 2>&1; then
+        manager=brew
     else
-        echo "No supported package manager found. Install '$package' manually." >&2
+        echo "No supported package manager found. On macOS, install Homebrew first; otherwise install '$package' with your system package manager." >&2
         return 1
     fi
 
-    echo "This will install '$package' using $manager."
-    printf "Download and install '$package'? [y/N] "
+    brew_package=$package
+    if [ "$manager" = brew ]; then
+        case "$package" in
+            python3) brew_package=python ;;
+            nodejs) brew_package=node ;;
+            default-jdk) brew_package=openjdk ;;
+            build-essential) brew_package=gcc ;;
+            mono-mcs|mono-runtime) brew_package=mono ;;
+            golang-go) brew_package=go ;;
+            php-cli) brew_package=php ;;
+            rustc) brew_package=rust ;;
+        esac
+    fi
+
+    echo "This will install '$brew_package' using $manager."
+    printf "Download and install '$brew_package'? [y/N] "
     if [ ! -r /dev/tty ]; then
         echo "Cannot ask for confirmation because this terminal has no interactive input." >&2
         return 1
@@ -38,6 +54,11 @@ install_package() {
         y|Y|yes|YES|Yes) ;;
         *) echo "Installation cancelled." >&2; return 1 ;;
     esac
+
+    if [ "$manager" = brew ]; then
+        brew install "$brew_package"
+        return $?
+    fi
 
     if [ "$(id -u)" -ne 0 ] && ! command -v sudo >/dev/null 2>&1; then
         echo "Installation needs root access, but sudo was not found." >&2
@@ -72,6 +93,29 @@ require_tool() {
     fi
 }
 
+require_apple_command_line_tools() {
+    tool=$1
+    if command -v "$tool" >/dev/null 2>&1; then
+        return
+    fi
+
+    echo "Required command '$tool' is missing. macOS provides it with Xcode Command Line Tools."
+    printf "Start the Command Line Tools installer now? [y/N] "
+    if [ ! -r /dev/tty ]; then
+        echo "Cannot ask for confirmation because this terminal has no interactive input." >&2
+        exit 1
+    fi
+    IFS= read -r answer </dev/tty
+    case "$answer" in
+        y|Y|yes|YES|Yes)
+            xcode-select --install
+            echo "Complete the Apple installer, then run this command again."
+            exit 1
+            ;;
+        *) echo "Installation cancelled." >&2; exit 1 ;;
+    esac
+}
+
 [ "$#" -eq 1 ] || usage
 
 case "$1" in
@@ -89,12 +133,20 @@ case "$1" in
         exec java -cp build HelloWorld
         ;;
     c)
-        require_tool cc build-essential
+        if [ "$(uname -s)" = Darwin ]; then
+            require_apple_command_line_tools cc
+        else
+            require_tool cc build-essential
+        fi
         cc hello_world.c -o build/hello_world_c
         exec build/hello_world_c
         ;;
     cpp)
-        require_tool c++ build-essential
+        if [ "$(uname -s)" = Darwin ]; then
+            require_apple_command_line_tools c++
+        else
+            require_tool c++ build-essential
+        fi
         c++ hello_world.cpp -o build/hello_world_cpp
         exec build/hello_world_cpp
         ;;
@@ -125,10 +177,17 @@ case "$1" in
         ;;
     asm)
         require_tool nasm nasm
-        require_tool ld binutils
-        nasm -f elf64 hello_world.asm -o build/hello_world.o
-        ld build/hello_world.o -o build/hello_world_asm
-        exec build/hello_world_asm
+        if [ "$(uname -s)" = Darwin ]; then
+            require_apple_command_line_tools clang
+            nasm -f macho64 hello_world_macos.asm -o build/hello_world_macos.o
+            clang build/hello_world_macos.o -o build/hello_world_macos
+            exec build/hello_world_macos
+        else
+            require_tool ld binutils
+            nasm -f elf64 hello_world.asm -o build/hello_world.o
+            ld build/hello_world.o -o build/hello_world_asm
+            exec build/hello_world_asm
+        fi
         ;;
     *) usage ;;
 esac
