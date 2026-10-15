@@ -34,7 +34,9 @@ dotnet run --project build/csharp
 
 ## Use the launcher
 
-The launcher builds and runs one program. Pass one of: `python`, `javascript`, `java`, `c`, `cpp`, `csharp`, `go`, `rust`, `php`, `ruby`, or `asm`. If its required command is missing, it asks before installing the needed system package. It supports apt, dnf, yum, pacman, and zypper; installation may ask for your system password through `sudo`.
+The launcher builds and runs one program. Pass one of: `python`, `javascript`, `java`, `c`, `cpp`, `csharp`, `go`, `rust`, `php`, `ruby`, or `asm`. If its required command is missing, it asks before installing the needed package. It supports Homebrew on macOS, plus apt, dnf, yum, pacman, and zypper on Linux. Linux package installation may ask for your system password through `sudo`.
+
+The assembler launcher selects the Linux ELF example on Linux and the macOS Mach-O example on macOS. On macOS, NASM and Xcode Command Line Tools (which provide `clang`) are needed. The launcher can install NASM through Homebrew; install the Command Line Tools with `xcode-select --install` if `clang` is missing.
 
 ```sh
 ./run.sh python
