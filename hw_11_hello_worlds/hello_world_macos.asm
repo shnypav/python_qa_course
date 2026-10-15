@@ -9,7 +9,7 @@ section .text
     global _main
     extern _printf
     extern _fgets
-    extern _stdin
+    extern ___stdinp
 
 _main:
     push rbp
@@ -23,7 +23,9 @@ _main:
     ; Read a line from standard input.
     lea rdi, [rel name]
     mov esi, 100
-    mov rdx, [rel _stdin]
+    ; macOS defines stdin as __stdinp; load the FILE pointer through the GOT.
+    mov rax, [rel ___stdinp wrt ..gotpcrel]
+    mov rdx, [rax]
     call _fgets
     test rax, rax
     jz .done
