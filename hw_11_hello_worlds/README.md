@@ -34,7 +34,7 @@ dotnet run --project build/csharp
 
 ## Use the launcher
 
-The launcher builds and runs one program. Pass one of: `python`, `javascript`, `java`, `c`, `cpp`, `csharp`, `go`, `rust`, `php`, `ruby`, or `asm`.
+The launcher builds and runs one program. Pass one of: `python`, `javascript`, `java`, `c`, `cpp`, `csharp`, `go`, `rust`, `php`, `ruby`, or `asm`. If its required command is missing, it asks before installing the needed system package. It supports apt, dnf, yum, pacman, and zypper; installation may ask for your system password through `sudo`.
 
 ```sh
 ./run.sh python
