@@ -180,7 +180,25 @@ case "$1" in
         if [ "$(uname -s)" = Darwin ]; then
             require_apple_command_line_tools clang
             nasm -f macho64 hello_world_macos.asm -o build/hello_world_macos.o
-            clang build/hello_world_macos.o -o build/hello_world_macos
+            clang -arch x86_64 build/hello_world_macos.o -o build/hello_world_macos
+            if [ "$(uname -m)" = arm64 ]; then
+                if ! arch -x86_64 /usr/bin/true >/dev/null 2>&1; then
+                    echo "This NASM program is x86-64 and needs Rosetta 2 to run on Apple Silicon."
+                    printf "Download and install Rosetta 2 now? [y/N] "
+                    if [ ! -r /dev/tty ]; then
+                        echo "Cannot ask for confirmation because this terminal has no interactive input." >&2
+                        exit 1
+                    fi
+                    IFS= read -r answer </dev/tty
+                    case "$answer" in
+                        y|Y|yes|YES|Yes)
+                            softwareupdate --install-rosetta --agree-to-license
+                            ;;
+                        *) echo "Installation cancelled." >&2; exit 1 ;;
+                    esac
+                fi
+                exec arch -x86_64 build/hello_world_macos
+            fi
             exec build/hello_world_macos
         else
             require_tool ld binutils
