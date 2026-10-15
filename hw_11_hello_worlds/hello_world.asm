@@ -3,6 +3,7 @@ section .data
     prompt_len equ $ - prompt
     greeting db "Hello, "
     greeting_len equ $ - greeting
+    exclamation db "!"
     newline db 10
 
 section .bss
@@ -47,6 +48,13 @@ _start:
     mov edi, 1
     mov rsi, name
     mov rdx, r12
+    syscall
+
+    ; Print the exclamation mark
+    mov eax, 1
+    mov edi, 1
+    mov rsi, exclamation
+    mov edx, 1
     syscall
 
     ; Print a newline

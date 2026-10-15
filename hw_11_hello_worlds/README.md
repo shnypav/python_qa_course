@@ -42,3 +42,13 @@ The assembler launcher selects the Linux ELF example on Linux and the macOS Mach
 ./run.sh python
 ./run.sh asm
 ```
+
+## Run the pytest checks
+
+Install the project dependencies with `python3 -m pip install -r ../requirements.txt`, then run the examples' integration checks from this directory:
+
+```sh
+python3 -m pytest -q tests
+```
+
+The checks run every program, so the matching runtimes and compilers for all eleven examples must be installed. A missing toolchain is reported as a test failure with the command that needs to be installed.
