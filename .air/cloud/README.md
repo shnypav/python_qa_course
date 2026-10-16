@@ -19,6 +19,14 @@ See [Air's cloud startup script documentation](https://www.jetbrains.com/help/ai
 
 The main Python environment installs the root requirements, including Flask, which is imported by the process-report application. Selenium's older package pins are installed separately so they do not downgrade the main environment. `uv` supplies Python 3.10 if the image does not already have it. The OS Python is preserved.
 
+## Fish terminal setup
+
+Startup also installs Fish, makes it the current user's login shell, and configures [Fisher](https://github.com/jorgebucaran/fisher) with the [Pure prompt](https://github.com/pure-fish/pure). Fisher 4.4.8 and Pure 4.19.2 are pinned to the revisions used in the existing workspace. Pure shows the Git branch, dirty/stash indicators, and numbered ahead/behind indicators; startup release checks are disabled.
+
+Air terminals that explicitly launch Bash switch to Fish only in interactive sessions with a terminal attached. Noninteractive Bash commands keep running in Bash, and the handoff guard allows opening a nested Bash shell from Fish. Existing Bash settings and Fish configuration are preserved; conflicting unmanaged prompt files are moved to a backup directory beneath the Fish configuration before installation.
+
+Plugin sources are cached beneath `${XDG_DATA_HOME:-$HOME/.local/share}/fish/plugins`; Fish configuration uses `${XDG_CONFIG_HOME:-$HOME/.config}/fish`. Repeated startup reuses matching plugins and adds the Bash handoff only once. This setup runs before Python and browser downloads, so those downloads failing later does not prevent Fish from being configured.
+
 ## Run the tests
 
 From the repository root:
@@ -60,7 +68,7 @@ The Selenium fixture accepts `CHROME_BIN`, `CHROMEDRIVER_PATH`, `FIREFOX_BIN`, a
 
 ## Network access and remaining test limitations
 
-Provisioning needs access to the configured Ubuntu/Debian package mirrors, PyPI (`pypi.org`, `files.pythonhosted.org`, or your configured pip mirror), GitHub and its API/raw/release download hosts (uv, Python 3.10, and GeckoDriver), Chrome for Testing downloads (`storage.googleapis.com`), and Mozilla's Firefox download hosts (`download.mozilla.org` and its CDN redirects). Configure these in the Air environment's network policy before launching a fresh task. The script retains TLS verification and fails with the download error if a required host is blocked. Check Air's startup logs: Air can still start the task after a startup-script failure.
+Provisioning needs access to the configured Ubuntu/Debian package mirrors, PyPI (`pypi.org`, `files.pythonhosted.org`, or your configured pip mirror), GitHub and its API/raw/release download hosts (Fisher, Pure, uv, Python 3.10, and GeckoDriver), Chrome for Testing downloads (`storage.googleapis.com`), and Mozilla's Firefox download hosts (`download.mozilla.org` and its CDN redirects). Configure these in the Air environment's network policy before launching a fresh task. The script retains TLS verification and fails with the download error if a required host is blocked. Check Air's startup logs: Air can still start the task after a startup-script failure.
 
 The API suites require `dog.ceo`, `api.openbrewerydb.org`, `jsonplaceholder.typicode.com`, and the URL selected by the command-line API test (default `ya.ru`). Selenium requires the OpenCart URL you select. Those services can reject requests, change data, or be unavailable; installing tools cannot guarantee their tests pass. The browser tests use the existing application's accounts and registration flows; setup does not manufacture credentials or replace the public demo.
 
