@@ -5,3 +5,4 @@ selenium
 webdriver-manager
 allure-pytest
 psutil
+Flask
