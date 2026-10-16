@@ -35,9 +35,20 @@ def choose_driver(request):
         if executor == "local":
 
             if browser == "chrome":
-                driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+                options = webdriver.ChromeOptions()
+                if os.getenv("CHROME_BIN"):
+                    options.binary_location = os.environ["CHROME_BIN"]
+                if os.getenv("AIR_QA_CONTAINER_BROWSER") == "1":
+                    options.add_argument("--no-sandbox")
+                    options.add_argument("--disable-dev-shm-usage")
+                driver_path = os.getenv("CHROMEDRIVER_PATH") or ChromeDriverManager().install()
+                driver = webdriver.Chrome(service=ChromeService(driver_path), options=options)
             elif browser == "firefox":
-                driver = webdriver.Firefox(service=FirefoxService(GeckoDriverManager().install()))
+                options = webdriver.FirefoxOptions()
+                if os.getenv("FIREFOX_BIN"):
+                    options.binary_location = os.environ["FIREFOX_BIN"]
+                driver_path = os.getenv("GECKODRIVER_PATH") or GeckoDriverManager().install()
+                driver = webdriver.Firefox(service=FirefoxService(driver_path), options=options)
             else:
                 LOGGER.error("Unsupported browser requested: %s", browser)
                 raise ValueError("Browser is not supported")
