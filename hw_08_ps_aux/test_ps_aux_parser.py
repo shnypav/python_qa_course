@@ -1,10 +1,8 @@
 # test_ps_aux_parser.py
-from datetime import datetime
-
 import pytest
 from unittest.mock import patch, mock_open
 from pathlib import Path
-from ps_aux_parser import (
+from hw_08_ps_aux.ps_aux_parser import (
     get_ps_aux_output,
     write_output_to_csv,
     calculate_statistics,
@@ -87,7 +85,6 @@ def test_calculate_statistics(mock_csv_file):
 def test_extract_application_name():
     """Test extracting application name from a command."""
     command = "/usr/bin/python3 script.py"
-    today = datetime.utcnow().date()
     app_name = extract_application_name(command)
     assert app_name == "python3"
 
