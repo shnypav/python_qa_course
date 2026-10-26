@@ -43,7 +43,7 @@ packages=(
     ca-certificates curl git unzip xz-utils bzip2 fish passwd diffutils
     python3 python3-dev python3-pip python3-venv
     build-essential binutils nasm nodejs default-jdk-headless
-    mono-mcs mono-runtime golang-go rustc php-cli ruby
+    mono-mcs mono-runtime golang-go rustc php-cli ruby lua5.4 tcl
     procps iproute2 net-tools lsof util-linux
     xvfb xauth x11-utils fonts-liberation fonts-dejavu-core
     libnss3 libnspr4 libgbm1 libx11-xcb1 libxss1 libdbus-glib-1-2
