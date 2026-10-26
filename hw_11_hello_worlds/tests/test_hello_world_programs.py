@@ -46,6 +46,11 @@ def assert_greeting(result):
         "rust",
         "php",
         "ruby",
+        "bash",
+        "perl",
+        "lua",
+        "tcl",
+        "awk",
         "asm",
     ],
 )
@@ -89,6 +94,16 @@ def test_program_prompts_for_name_and_greets_user(language, tmp_path):
         command = ["php", str(HOMEWORK_DIR / "hello_world.php")]
     elif language == "ruby":
         command = ["ruby", str(HOMEWORK_DIR / "hello_world.rb")]
+    elif language == "bash":
+        command = ["bash", str(HOMEWORK_DIR / "hello_world.sh")]
+    elif language == "perl":
+        command = ["perl", str(HOMEWORK_DIR / "hello_world.pl")]
+    elif language == "lua":
+        command = ["lua", str(HOMEWORK_DIR / "hello_world.lua")]
+    elif language == "tcl":
+        command = ["tclsh", str(HOMEWORK_DIR / "hello_world.tcl")]
+    elif language == "awk":
+        command = ["awk", "-f", str(HOMEWORK_DIR / "hello_world.awk")]
     else:
         is_macos = platform.system() == "Darwin"
         nasm_source = (
