@@ -32,7 +32,7 @@ def test_02_sub_breed_list_belongs_to_requested_breed():
 
     assert response.status_code == 200
     assert result["status"] == "success"
-    assert result["message"] == ["afghan", "basset", "blood", "english", "ibizan", "walker"]
+    assert result["message"] == ["afghan", "basset", "blood", "english", "ibizan", "plott", "walker"]
 
 
 @pytest.mark.parametrize("breed", ["hound", "akita"])
@@ -72,4 +72,4 @@ def test_06_unknown_breed_returns_error_contract():
 
     assert response.status_code == 404
     assert result["status"] == "error"
-    assert result["message"] == "Breed not found (master breed does not exist)"
+    assert result["message"] == "Breed not found (main breed does not exist)"
