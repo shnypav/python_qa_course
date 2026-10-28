@@ -1,3 +1,4 @@
+import logging
 import platform
 import shutil
 import subprocess
@@ -8,52 +9,72 @@ import pytest
 
 HOMEWORK_DIR = Path(__file__).resolve().parents[1]
 USER_NAME = "Ada Lovelace"
+LOGGER = logging.getLogger("hw_11_hello_worlds.tests")
+LANGUAGES = [
+    "python",
+    "javascript",
+    "java",
+    "c",
+    "cpp",
+    "csharp",
+    "go",
+    "rust",
+    "php",
+    "ruby",
+    "bash",
+    "perl",
+    "lua",
+    "tcl",
+    "awk",
+    "asm",
+]
 
 
 def run_program(command, *, input_text=f"{USER_NAME}\n", cwd=HOMEWORK_DIR):
     executable = command[0]
+    LOGGER.info("Running command=%r cwd=%s input=%r", command, cwd, input_text)
     if shutil.which(executable) is None:
+        LOGGER.error("Required command is missing: %s", executable)
         pytest.fail(
             f"Required command '{executable}' is missing. "
             "Install the language toolchain described in the homework README."
         )
 
-    return subprocess.run(
-        command,
-        cwd=cwd,
-        input=input_text,
-        capture_output=True,
-        text=True,
-        check=True,
+    try:
+        result = subprocess.run(
+            command,
+            cwd=cwd,
+            input=input_text,
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+    except subprocess.TimeoutExpired as error:
+        LOGGER.error(
+            "Command timed out: %r stdout=%r stderr=%r",
+            command, error.stdout, error.stderr,
+        )
+        raise
+    LOGGER.info(
+        "Exit code=%s stdout=%r stderr=%r",
+        result.returncode, result.stdout, result.stderr,
     )
+    result.check_returncode()
+    return result
 
 
 def assert_greeting(result):
     assert result.stdout.startswith("What is your name? ")
     assert result.stdout.rstrip().endswith(f"Hello, {USER_NAME}!")
+    log_lines = result.stderr.splitlines()
+    started = "[INFO] Program started"
+    finished = "[INFO] Greeting printed"
+    assert log_lines.count(started) == 1
+    assert log_lines.count(finished) == 1
+    assert log_lines.index(started) < log_lines.index(finished)
 
 
-@pytest.mark.parametrize(
-    "language",
-    [
-        "python",
-        "javascript",
-        "java",
-        "c",
-        "cpp",
-        "csharp",
-        "go",
-        "rust",
-        "php",
-        "ruby",
-        "bash",
-        "perl",
-        "lua",
-        "tcl",
-        "awk",
-        "asm",
-    ],
-)
+@pytest.mark.parametrize("language", LANGUAGES)
 def test_program_prompts_for_name_and_greets_user(language, tmp_path):
     if language == "python":
         command = ["python3", str(HOMEWORK_DIR / "hello_world.py")]
@@ -145,3 +166,18 @@ def test_program_prompts_for_name_and_greets_user(language, tmp_path):
             command = [str(binary)]
 
     assert_greeting(run_program(command))
+
+
+@pytest.mark.parametrize("language", LANGUAGES)
+def test_launcher_logs_selected_language_and_runs_program(language, tmp_path):
+    homework_copy = tmp_path / "homework"
+    shutil.copytree(
+        HOMEWORK_DIR,
+        homework_copy,
+        ignore=shutil.ignore_patterns("build", "tests", "*.log", "__pycache__"),
+    )
+
+    result = run_program(["sh", "run.sh", language], cwd=homework_copy)
+
+    assert_greeting(result)
+    assert f"[INFO] Building/running language: {language}" in result.stderr.splitlines()

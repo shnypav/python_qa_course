@@ -4,8 +4,10 @@ class HelloWorld
 {
     static void Main()
     {
+        Console.Error.WriteLine("[INFO] Program started");
         Console.Write("What is your name? ");
         string name = Console.ReadLine() ?? "";
         Console.WriteLine($"Hello, {name}!");
+        Console.Error.WriteLine("[INFO] Greeting printed");
     }
 }

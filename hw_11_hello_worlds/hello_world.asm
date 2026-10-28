@@ -1,4 +1,8 @@
 section .data
+    log_start db "[INFO] Program started", 10
+    log_start_len equ $ - log_start
+    log_done db "[INFO] Greeting printed", 10
+    log_done_len equ $ - log_done
     prompt  db "What is your name? "
     prompt_len equ $ - prompt
     greeting db "Hello, "
@@ -13,6 +17,12 @@ section .text
     global _start
 
 _start:
+    mov eax, 1
+    mov edi, 2                  ; stderr
+    lea rsi, [rel log_start]
+    mov edx, log_start_len
+    syscall
+
     ; Print the prompt
     mov eax, 1                  ; sys_write
     mov edi, 1                  ; stdout
@@ -62,6 +72,12 @@ _start:
     mov edi, 1
     mov rsi, newline
     mov edx, 1
+    syscall
+
+    mov eax, 1
+    mov edi, 2
+    lea rsi, [rel log_done]
+    mov edx, log_done_len
     syscall
 
 .exit:
