@@ -15,6 +15,11 @@ go run hello_world.go
 rustc hello_world.rs -o build/hello_world_rust && ./build/hello_world_rust
 php hello_world.php
 ruby hello_world.rb
+bash hello_world.sh
+perl hello_world.pl
+lua hello_world.lua
+tclsh hello_world.tcl
+awk -f hello_world.awk
 nasm -f elf64 hello_world.asm -o build/hello_world.o && ld build/hello_world.o -o build/hello_world_asm && ./build/hello_world_asm
 ```
 
@@ -34,7 +39,7 @@ dotnet run --project build/csharp
 
 ## Use the launcher
 
-The launcher builds and runs one program. Pass one of: `python`, `javascript`, `java`, `c`, `cpp`, `csharp`, `go`, `rust`, `php`, `ruby`, or `asm`. If its required command is missing, it asks before installing the needed package. It supports Homebrew on macOS, plus apt, dnf, yum, pacman, and zypper on Linux. Linux package installation may ask for your system password through `sudo`.
+The launcher builds and runs one program. Pass one of: `python`, `javascript`, `java`, `c`, `cpp`, `csharp`, `go`, `rust`, `php`, `ruby`, `bash`, `perl`, `lua`, `tcl`, `awk`, or `asm`. If its required command is missing, it asks before installing the needed package. It supports Homebrew on macOS, plus apt, dnf, yum, pacman, and zypper on Linux. Linux package installation may ask for your system password through `sudo`.
 
 The assembler launcher selects the Linux ELF example on Linux and the macOS Mach-O example on macOS. The macOS NASM example targets x86-64. On Apple Silicon, the launcher builds it for x86-64 and asks to install Rosetta 2 if needed to run it. NASM and Xcode Command Line Tools (which provide `clang`) are needed on macOS. The launcher can install NASM through Homebrew; install the Command Line Tools with `xcode-select --install` if `clang` is missing.
 
@@ -51,4 +56,6 @@ Install the project dependencies with `python3 -m pip install -r ../requirements
 python3 -m pytest -q tests
 ```
 
-The checks run every program, so the matching runtimes and compilers for all eleven examples must be installed. A missing toolchain is reported as a test failure with the command that needs to be installed.
+The checks run every program, so the matching runtimes and compilers for all sixteen examples must be installed. A missing toolchain is reported as a test failure with the command that needs to be installed.
+
+Each run writes a log file to `../logs/hw_11_hello_worlds_<timestamp>.log`. It records every command the checks run, its exit code, duration, and output, plus each test's result and a summary of the whole run. Failed tests also include the failure details.

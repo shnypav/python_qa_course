@@ -1,34 +1,62 @@
+import logging
 import platform
+import shlex
 import shutil
 import subprocess
 from pathlib import Path
+from time import monotonic
 
 import pytest
 
 
 HOMEWORK_DIR = Path(__file__).resolve().parents[1]
 USER_NAME = "Ada Lovelace"
+LOGGER = logging.getLogger("hw_11_hello_worlds")
 
 
 def run_program(command, *, input_text=f"{USER_NAME}\n", cwd=HOMEWORK_DIR):
     executable = command[0]
     if shutil.which(executable) is None:
+        LOGGER.error("Required command is missing: %s", executable)
         pytest.fail(
             f"Required command '{executable}' is missing. "
             "Install the language toolchain described in the homework README."
         )
 
-    return subprocess.run(
-        command,
-        cwd=cwd,
-        input=input_text,
-        capture_output=True,
-        text=True,
-        check=True,
+    LOGGER.info("Command started: %s; stdin=%r", shlex.join(command), input_text)
+    started_at = monotonic()
+    try:
+        result = subprocess.run(
+            command,
+            cwd=cwd,
+            input=input_text,
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+    except subprocess.CalledProcessError as error:
+        LOGGER.error(
+            "Command failed: %s -> exit code %s in %.3fs; stdout=%r; stderr=%r",
+            shlex.join(command),
+            error.returncode,
+            monotonic() - started_at,
+            error.stdout,
+            error.stderr,
+        )
+        raise
+
+    LOGGER.info(
+        "Command finished: %s -> exit code %s in %.3fs",
+        shlex.join(command),
+        result.returncode,
+        monotonic() - started_at,
     )
+    LOGGER.debug("Command output: stdout=%r; stderr=%r", result.stdout, result.stderr)
+    return result
 
 
 def assert_greeting(result):
+    LOGGER.info("Checking greeting for %s in stdout=%r", USER_NAME, result.stdout)
     assert result.stdout.startswith("What is your name? ")
     assert result.stdout.rstrip().endswith(f"Hello, {USER_NAME}!")
 

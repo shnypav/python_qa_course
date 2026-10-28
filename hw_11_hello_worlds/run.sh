@@ -5,7 +5,7 @@ cd "$(dirname "$0")"
 mkdir -p build
 
 usage() {
-    echo "Usage: $0 {python|javascript|java|c|cpp|csharp|go|rust|php|ruby|asm}" >&2
+    echo "Usage: $0 {python|javascript|java|c|cpp|csharp|go|rust|php|ruby|bash|perl|lua|tcl|awk|asm}" >&2
     exit 2
 }
 
@@ -40,6 +40,9 @@ install_package() {
             golang-go) brew_package=go ;;
             php-cli) brew_package=php ;;
             rustc) brew_package=rust ;;
+            lua5.4) brew_package=lua ;;
+            tcl) brew_package=tcl-tk ;;
+            mawk) brew_package=awk ;;
         esac
     fi
 
@@ -174,6 +177,26 @@ case "$1" in
     ruby)
         require_tool ruby ruby
         exec ruby hello_world.rb
+        ;;
+    bash)
+        require_tool bash bash
+        exec bash hello_world.sh
+        ;;
+    perl)
+        require_tool perl perl
+        exec perl hello_world.pl
+        ;;
+    lua)
+        require_tool lua lua5.4
+        exec lua hello_world.lua
+        ;;
+    tcl)
+        require_tool tclsh tcl
+        exec tclsh hello_world.tcl
+        ;;
+    awk)
+        require_tool awk mawk
+        exec awk -f hello_world.awk
         ;;
     asm)
         require_tool nasm nasm
