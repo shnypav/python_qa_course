@@ -24,4 +24,21 @@ This repository contains independent Python QA course assignments. Keep changes 
 ## Git
 
 - The working tree may contain unrelated user changes. Do not revert, format, or modify files outside the requested scope.
-- Keep commit and pull-request descriptions short, factual, and free of generated-by attribution.
+- Keep commit and pull-*request* descr. # sdf
+-   iptions short, factual, and free of generated-by (attribution).
+
+
+# Hello
+
+
+- a
+- f
+- d
+
+
+2. sd
+3.
+
+
+
+word #
