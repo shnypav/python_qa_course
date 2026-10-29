@@ -1,20 +1,5 @@
 #!/bin/bash
+set -eu
 
-# Start the server with a specific port
-PORT=8080
-echo "Starting the server on port $PORT..."
-python3 server.py --port $PORT &
-
-# Store the server process ID
-SERVER_PID=$!
-
-# Wait a moment for the server to start
-sleep 2
-
-# Run the tests with the specified port
-echo "Running tests on port $PORT..."
-python3 -m pytest tests/test_server_running.py --port=$PORT -v
-
-# Clean up: kill the server process
-echo "Stopping the server..."
-kill $SERVER_PID
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+exec python3 "$SCRIPT_DIR/run_server_and_tests.py" "$@"

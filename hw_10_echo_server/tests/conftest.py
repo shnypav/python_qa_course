@@ -1,59 +1,135 @@
+import argparse
+from collections import deque
+import importlib.util
+from pathlib import Path
+import queue
+import re
+import socket
+import subprocess
+import sys
+import threading
+
 import pytest
 import requests
-import psutil
+
+
+SERVER_PATH = Path(__file__).resolve().parents[1] / "server.py"
+TIMEOUT = 5
+
+
+def port_number(value):
+    try:
+        port = int(value)
+    except ValueError:
+        raise argparse.ArgumentTypeError("port must be an integer") from None
+    if not 1 <= port <= 65535:
+        raise argparse.ArgumentTypeError("port must be between 1 and 65535")
+    return port
 
 
 def pytest_addoption(parser):
-    """Add command-line options to pytest."""
-    parser.addoption("--port", action="store", default=None, help="Port number for the server")
+    parser.addoption(
+        "--port",
+        type=port_number,
+        default=None,
+        help="Test an existing localhost server instead of starting one",
+    )
 
 
-@pytest.fixture(scope="module")
-def server_url(request):
-    """
-    Returns the URL of the running server.
-    This fixture attempts to find the port of the already running server.
-    The server should be started manually before running these tests.
-    
-    Can be overridden by passing --port=<port_number> to pytest.
-    """
-    # Check if port was provided as a command-line parameter
-    port_param = request.config.getoption("--port")
-    if port_param:
-        found_port = int(port_param)
-        print(f"Using port {found_port} from command-line parameter")
-    else:
-        # Find the port by looking for Python processes with 'server.py' in their command line
-        found_port = None
-        for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
-            try:
-                if proc.info['name'] == 'python' or proc.info['name'] == 'python3':
-                    cmdline = ' '.join(proc.info['cmdline'])
-                    if 'server.py' in cmdline:
-                        # Now we need to find which port this process is listening on
-                        connections = psutil.Process(proc.info['pid']).net_connections()
-                        for conn in connections:
-                            if conn.status == 'LISTEN':
-                                found_port = conn.laddr.port
-                                break
-                        if found_port:
-                            break
-            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-                pass
+@pytest.fixture(scope="session")
+def server_module():
+    # Import this assignment by path to avoid other homeworks' server modules.
+    spec = importlib.util.spec_from_file_location("echo_server_under_test", SERVER_PATH)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
-        # If we can't find the port automatically, fall back to the default
-        if not found_port:
-            # Using the default port
-            found_port = 60383
-            print(f"Warning: Could not auto-detect server port, using default port {found_port}")
-        else:
-            print(f"Found server running on port {found_port}")
 
-    # Verify the server is actually responding
+@pytest.fixture(scope="session")
+def server_address(request):
+    port = request.config.getoption("--port")
+    if port is not None:
+        yield "127.0.0.1", port
+        return
+
+    # The server announces its selected port after bind/listen. Drain stdout
+    # continuously so a full pipe cannot stall the server during a long run.
+    output = deque(maxlen=100)
+    ready = queue.Queue()
+    process = subprocess.Popen(
+        [sys.executable, "-u", str(SERVER_PATH)],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+    )
+
+    def collect_output():
+        announced = False
+        for line in process.stdout:
+            output.append(line)
+            match = re.search(r"Waiting for a connection on \('', (\d+)\)", line)
+            if match and not announced:
+                ready.put(int(match.group(1)))
+                announced = True
+        if not announced:
+            ready.put(None)
+
+    reader = threading.Thread(target=collect_output, daemon=True)
+    reader.start()
     try:
-        requests.get(f"http://localhost:{found_port}", timeout=1)
-        print(f"Server at http://localhost:{found_port} is responding")
-    except requests.RequestException:
-        pytest.skip(f"No server responding at port {found_port}. Please start the server before running tests.")
+        try:
+            port = ready.get(timeout=TIMEOUT)
+        except queue.Empty:
+            pytest.fail("Echo server did not start in time:\n" + "".join(output))
+        if port is None or process.poll() is not None:
+            pytest.fail("Echo server exited during startup:\n" + "".join(output))
+        yield "127.0.0.1", port
+    finally:
+        process.terminate()
+        try:
+            process.wait(timeout=TIMEOUT)
+        except subprocess.TimeoutExpired:
+            process.kill()
+            process.wait(timeout=TIMEOUT)
+        reader.join(timeout=TIMEOUT)
+        process.stdout.close()
 
-    return f"http://localhost:{found_port}"
+
+@pytest.fixture(scope="session")
+def server_url(server_address):
+    host, port = server_address
+    return f"http://{host}:{port}"
+
+
+@pytest.fixture
+def send_request(server_url):
+    with requests.Session() as session:
+        session.trust_env = False
+
+        def send(method="GET", path="/", **kwargs):
+            response = session.request(
+                method,
+                server_url + path,
+                timeout=TIMEOUT,
+                allow_redirects=False,
+                **kwargs,
+            )
+            response.encoding = "utf-8"
+            return response
+
+        yield send
+
+
+@pytest.fixture
+def raw_request(server_address):
+    def send(data):
+        with socket.create_connection(server_address, timeout=TIMEOUT) as client:
+            source = client.getsockname()
+            client.sendall(data)
+            client.shutdown(socket.SHUT_WR)
+            chunks = []
+            while chunk := client.recv(4096):
+                chunks.append(chunk)
+        return b"".join(chunks), source
+
+    return send
