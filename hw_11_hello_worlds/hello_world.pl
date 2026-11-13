@@ -1,6 +1,8 @@
 use strict;
 use warnings;
 
+$| = 1;
 print "What is your name? ";
-chomp(my $name = <STDIN>);
+my $name = <STDIN> // "";
+chomp $name;
 print "Hello, $name!\n";
