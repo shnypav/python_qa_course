@@ -1,3 +1,5 @@
-printf 'What is your name? '
-read -r name
-printf 'Hello, %s!\n' "$name"
+#!/usr/bin/env bash
+
+printf "What is your name? "
+IFS= read -r name || true
+printf "Hello, %s!\n" "$name"

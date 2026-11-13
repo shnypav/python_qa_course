@@ -46,8 +46,10 @@ def assert_greeting(result):
         "rust",
         "php",
         "ruby",
-        "bash",
         "perl",
+        "swift",
+        "kotlin",
+        "bash",
         "lua",
         "tcl",
         "awk",
@@ -94,10 +96,28 @@ def test_program_prompts_for_name_and_greets_user(language, tmp_path):
         command = ["php", str(HOMEWORK_DIR / "hello_world.php")]
     elif language == "ruby":
         command = ["ruby", str(HOMEWORK_DIR / "hello_world.rb")]
-    elif language == "bash":
-        command = ["bash", str(HOMEWORK_DIR / "hello_world.sh")]
     elif language == "perl":
         command = ["perl", str(HOMEWORK_DIR / "hello_world.pl")]
+    elif language == "swift":
+        binary = tmp_path / "hello_world_swift"
+        run_program(
+            ["swiftc", str(HOMEWORK_DIR / "hello_world.swift"), "-o", str(binary)]
+        )
+        command = [str(binary)]
+    elif language == "kotlin":
+        jar = tmp_path / "hello_world_kotlin.jar"
+        run_program(
+            [
+                "kotlinc",
+                str(HOMEWORK_DIR / "hello_world.kt"),
+                "-include-runtime",
+                "-d",
+                str(jar),
+            ]
+        )
+        command = ["java", "-jar", str(jar)]
+    elif language == "bash":
+        command = ["bash", str(HOMEWORK_DIR / "hello_world.sh")]
     elif language == "lua":
         command = ["lua", str(HOMEWORK_DIR / "hello_world.lua")]
     elif language == "tcl":

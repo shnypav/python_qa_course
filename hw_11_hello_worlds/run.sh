@@ -5,7 +5,7 @@ cd "$(dirname "$0")"
 mkdir -p build
 
 usage() {
-    echo "Usage: $0 {python|javascript|java|c|cpp|csharp|go|rust|php|ruby|asm}" >&2
+    echo "Usage: $0 {python|javascript|java|c|cpp|csharp|go|rust|php|ruby|perl|swift|kotlin|bash|asm}" >&2
     exit 2
 }
 
@@ -174,6 +174,29 @@ case "$1" in
     ruby)
         require_tool ruby ruby
         exec ruby hello_world.rb
+        ;;
+    perl)
+        require_tool perl perl
+        exec perl hello_world.pl
+        ;;
+    swift)
+        if [ "$(uname -s)" = Darwin ]; then
+            require_apple_command_line_tools swiftc
+        else
+            require_tool swiftc swiftlang
+        fi
+        swiftc hello_world.swift -o build/hello_world_swift
+        exec build/hello_world_swift
+        ;;
+    kotlin)
+        require_tool kotlinc kotlin
+        require_tool java default-jdk
+        kotlinc hello_world.kt -include-runtime -d build/hello_world_kotlin.jar
+        exec java -jar build/hello_world_kotlin.jar
+        ;;
+    bash)
+        require_tool bash bash
+        exec bash hello_world.sh
         ;;
     asm)
         require_tool nasm nasm
