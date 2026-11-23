@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Why does the Codex agent in Air break when Codex is wired through the central CLI tool (262.1105+)?</title>
+<style>
+  body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; line-height: 1.55; max-width: 60rem; margin: 0 auto; padding: 1.5rem; color: #1f2328; }
+  h1 { font-size: 1.6rem; line-height: 1.3; }
+  h2 { margin-top: 2.2rem; border-bottom: 1px solid #d0d7de; padding-bottom: .3rem; }
+  code, pre { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: .9em; }
+  code { background: #f6f8fa; padding: .1em .3em; border-radius: 4px; }
+  pre { background: #f6f8fa; padding: 1rem; overflow-x: auto; border-radius: 6px; }
+  pre code { background: none; padding: 0; }
+  table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+  th, td { border: 1px solid #d0d7de; padding: .45rem .6rem; text-align: left; vertical-align: top; }
+  th { background: #f6f8fa; }
+  .tldr { background: #ddf4ff; border-left: 4px solid #0969da; padding: .8rem 1rem; border-radius: 4px; }
+  .warn { background: #fff8c5; border-left: 4px solid #bf8700; padding: .8rem 1rem; border-radius: 4px; }
+  .ok { color: #1a7f37; font-weight: 600; }
+  .bad { color: #cf222e; font-weight: 600; }
+  footer { margin-top: 3rem; font-size: .85rem; color: #57606a; }
+</style>
+</head>
+<body>
+
+<h1>Why does the Codex agent in Air break when Codex is wired through the central CLI tool (262.1105+)?</h1>
+<p>Run ANS-6, issue AIR-7557. Researched on 2026-11-23 against the public <a href="https://github.com/openai/codex">openai/codex</a> repository.</p>
+
+<div class="tldr">
+<p><strong>Short answer.</strong> In master, Air now bundles Codex <code>rust-v0.166.0</code>. That release added a check, in upstream PR
+<a href="https://github.com/openai/codex/pull/57840">#57840</a> (commit <code>7ce5fa7</code>). Before every prompt, the check compares the chat's provider with the
+<em>default</em> provider in the user's Codex config. The wire tool sets that default to <code>wire</code>, while Air starts its chats on its own provider:
+<code>custom-gateway</code> for the JB subscription, or the provider for a personal account. The two never match, so the app-server
+rejects every prompt without sending anything.</p>
+<p><strong>Upstream already relaxed the check.</strong> PR <a href="https://github.com/openai/codex/pull/59503">#59503</a> removes it. Codex
+<strong>0.168.0</strong> (2026-11-13) was the first release to include that change, and all later releases have it. The simplest fix for Air is to bundle Codex
+<strong>0.168.0 or later</strong> instead of 0.166.0. Do not stop at 0.167.0, which still has the check.</p>
+</div>
+
+<h2>1. What happens</h2>
+<ul>
+  <li>Codex is "wired" with the central CLI tool, so the user's Codex config selects <code>model_provider = "wire"</code> by default.</li>
+  <li>Air starts its own Codex app-server and opens a chat (a <em>thread</em>) with a provider override for the account in use. For the JB subscription that is <code>custom-gateway</code>.</li>
+  <li>On the first prompt (<code>turn/start</code>), Codex 0.166.0 reloads the "latest" config: user/project config, profile, and app-server launch overrides, but <em>not</em> the thread's own override. That config says <code>wire</code>. The thread says <code>custom-gateway</code>. The request is rejected.</li>
+  <li>This happens with both the JB and the personal subscription, because neither is the <code>wire</code> provider.</li>
+  <li>Users who have not wired Codex have no top-level <code>model_provider</code>, or one that already matches. They do not see the problem, which is why it is not reported more widely.</li>
+</ul>
+
+<p>The error comes from the new <code>ModelProviderError::ModelProviderMismatch</code> variant. In 0.166.0 its text is:</p>
+<pre><code>This chat uses {model_provider}, but your current provider is {current_model_provider}. Switch to {model_provider} to continue.</code></pre>
+<p>In the reported setup, that becomes:</p>
+<pre><code>This chat uses custom-gateway, but your current provider is wire. Switch to custom-gateway to continue.</code></pre>
+<p>The JSON-RPC error carries structured <code>data</code> with this shape (generated TypeScript type from the PR):</p>
+<pre><code>export type ModelProviderError =
+  | { "type": "modelProviderMismatch", modelProvider: string, currentModelProvider: string }
+  | { "type": "modelProviderNotConfigured", modelProvider: string }
+  | { "type": "modelProviderPolicyConflict", modelProvider: string, requiredModelProvider: string };</code></pre>
+
+<h2>2. The code that causes it (Codex 0.166.0)</h2>
+<p>PR #57840 added this method to <code>codex-rs/app-server/src/config_manager.rs</code>. It replaced the earlier policy-only
+<code>check_thread_model_provider</code> call in turn start/steer, review, compaction and thread resume:</p>
+<pre><code>/// Admits resumed threads and input only on the currently selected provider.
+pub(crate) async fn check_thread_model_provider_for_input(
+    &amp;self,
+    current: &amp;Config,
+) -&gt; std::io::Result&lt;()&gt; {
+    self.check_thread_model_provider(current).await?;
+    let configured = self
+        .load_latest_config(Some(current.cwd.to_path_buf()))   // user config + profile + launch -c overrides
+        .await?;
+    if current.model_provider_id != configured.model_provider_id {   // "custom-gateway" != "wire"
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::InvalidInput,
+            ModelProviderError::ModelProviderMismatch {
+                model_provider: current.model_provider_id.clone(),
+                current_model_provider: configured.model_provider_id,
+            },
+        ));
+    }
+    Ok(())
+}</code></pre>
+<p><code>load_latest_config</code> builds the config from the app-server's <code>current_cli_overrides()</code> plus the config files.
+Overrides passed in <code>thread/start</code> are not part of it. That is the asymmetry that bites Air.
+<code>thread/resume</code> got a matching check in <code>load_for_resume</code>.</p>
+
+<h2>3. Upstream relaxed it a week later</h2>
+<p>PR <a href="https://github.com/openai/codex/pull/59503">#59503, "Keep threads on their saved model provider when defaults change"</a> (commit <code>e115d5f9</code>, merged 2026-11-04) says:</p>
+<blockquote>Changing the default model provider should not prevent users from resuming or continuing a thread that uses another configured provider.</blockquote>
+<p>It deletes <code>check_thread_model_provider_for_input</code> and goes back to <code>check_thread_model_provider</code>. That function only compares the thread with <em>managed</em>
+provider requirements (organization policy), never with the user's default provider:</p>
+<pre><code>-            .check_thread_model_provider_for_input(thread.config().await.as_ref())
++            .check_thread_model_provider(thread.config().await.as_ref())</code></pre>
+<p>Cold resume now uses the thread's saved provider. One rule remains: a resume request that explicitly asks for a <em>different</em> provider than the saved one is rejected with
+<code>Cannot change this thread's model provider from `X` to `Y` on resume.</code></p>
+
+<h3>Which Codex versions are affected</h3>
+<p>Checked with the GitHub compare API: is each commit an ancestor of each release tag?</p>
+<table>
+  <thead><tr><th>Codex release</th><th>Published</th><th>Contains #57840 (check added)</th><th>Contains #59503 (check removed)</th><th>Air chat on a wired setup</th></tr></thead>
+  <tbody>
+    <tr><td>rust-v0.165.0</td><td>2026-10-27</td><td>no</td><td>no</td><td class="ok">works (confirmed in the report)</td></tr>
+    <tr><td>rust-v0.166.0</td><td>2026-10-29</td><td>yes</td><td>no</td><td class="bad">broken (reported)</td></tr>
+    <tr><td>rust-v0.167.0</td><td>2026-11-06</td><td>yes</td><td>no</td><td class="bad">expected broken (same code path)</td></tr>
+    <tr><td>rust-v0.168.0</td><td>2026-11-13</td><td>yes</td><td>yes</td><td class="ok">expected to work</td></tr>
+    <tr><td>rust-v0.169.x, 0.170.0, 0.171.0 (latest stable)</td><td>2026-11-17 &ndash; 2026-11-20</td><td>yes</td><td>yes</td><td class="ok">expected to work</td></tr>
+  </tbody>
+</table>
+<p>"Expected" means the conclusion comes from the source code. I did not run these binaries against Air.</p>
+
+<h2>4. What to do</h2>
+<table>
+  <thead><tr><th>Option</th><th>What</th><th>Pros / cons</th></tr></thead>
+  <tbody>
+    <tr><td><strong>A (recommended)</strong></td>
+        <td>Bump the Codex version bundled in Air (the revision that moved to 0.166.0) to <strong>0.168.0 or later</strong>, e.g. 0.171.0.</td>
+        <td>Removes the cause upstream intended to remove, and keeps the security fixes from newer releases. Needs a check that the newer app-server protocol still matches Air's client. Air must also not pass a different <code>model_provider</code> when resuming an existing chat.</td></tr>
+    <tr><td>B</td>
+        <td>Keep 0.166/0.167, but start the app-server with a launch override that matches the chat provider. Launch overrides count in the "latest config".</td>
+        <td>Works with the current binary, but one app-server process gets one default provider. If JB and personal chats share a process, the other one still breaks. This is what the agent's analysis calls "align the startup provider".</td></tr>
+    <tr><td>C</td>
+        <td>Revert master to rust-v0.165.0, as in the 262.1102 EAP candidate.</td>
+        <td>Known to work, but loses everything newer.</td></tr>
+  </tbody>
+</table>
+
+<p>Option B in practice:</p>
+<pre><code># Launch override: becomes part of current_cli_overrides(), so load_latest_config() agrees with the thread
+# (root-level -c, passed through to the app-server subcommand)
+codex -c model_provider='"custom-gateway"' app-server</code></pre>
+
+<h3>Workaround for affected users until a fixed build</h3>
+<p>Keep <code>wire</code> available for the terminal CLI, but stop it being the top-level default. Move it into a profile in the Codex config the wire tool edits (usually <code>~/.codex/config.toml</code>):</p>
+<pre><code># before
+model_provider = "wire"
+
+# after: no top-level default; use `codex -p wire` in the terminal
+[profiles.wire]
+model_provider = "wire"</code></pre>
+<p>Restart Air afterwards, and start a <em>new</em> chat: older chats keep the provider they were created with. I have not tested this workaround. It follows from the code above, because without a top-level default the "latest config" falls back to the same provider, or Air's launch overrides win.</p>
+
+<div class="warn">
+<p><strong>One case the upgrade does not fix.</strong> If the central tool writes a <em>managed</em> requirement, such as <code>model_provider</code> in a <code>requirements.toml</code> or a cloud policy, rather than a normal config value, the remaining policy check in 0.168.0+ still rejects other providers. The error is then <code>modelProviderPolicyConflict</code>: "...your organization requires “wire”...". That is a different message from the one reported. If it appears after the bump, look there.</p>
+</div>
+
+<h2>5. How to verify a fix</h2>
+<ol>
+  <li>Wire Codex with the central CLI tool, so the user config has <code>model_provider = "wire"</code>.</li>
+  <li>Start Air with the candidate Codex build. Open a new Codex chat with the JB subscription and send a prompt. Repeat with a personal subscription.</li>
+  <li>Expected: the prompt reaches the gateway and gets an answer, with no "This chat uses …" error.</li>
+  <li>Resume an older chat after restarting Air. Expected: it continues on its saved provider.</li>
+  <li>Regression check: run the same steps with an unwired Codex config.</li>
+</ol>
+
+<h2>6. What I could not check</h2>
+<ul>
+  <li>The Air change (<code>jetbrains.team … ultimate revision ef4da159</code>), the screenshot, the attached analysis markdown and the Air logs were not available here. The exact provider IDs (<code>wire</code>, <code>custom-gateway</code>) and the bundled version (0.166.0) come from the report. Everything on the Codex side was read from the public repository.</li>
+  <li>Air's launcher code is not in this repository, which is a Python QA course with nothing related. So options A and B are recommendations, not tested patches.</li>
+</ul>
+
+<h2>Sources</h2>
+<ul>
+  <li><a href="https://github.com/openai/codex/pull/57840">openai/codex#57840 &ndash; Validate thread providers before resume and input</a> (merge commit 7ce5fa7b, 2026-10-28)</li>
+  <li><a href="https://github.com/openai/codex/pull/59503">openai/codex#59503 &ndash; Keep threads on their saved model provider when defaults change</a> (merge commit e115d5f9, 2026-11-04)</li>
+  <li><a href="https://github.com/openai/codex/releases">openai/codex releases</a> (0.165.0 &ndash; 0.171.0)</li>
+  <li><code>codex-rs/app-server/src/config_manager.rs</code> at <a href="https://github.com/openai/codex/blob/rust-v0.166.0/codex-rs/app-server/src/config_manager.rs">rust-v0.166.0</a> and <a href="https://github.com/openai/codex/blob/rust-v0.171.0/codex-rs/app-server/src/config_manager.rs">rust-v0.171.0</a></li>
+</ul>
+
+<footer>Produced by Air Automations. Name: Factory · Answer question as HTML page · Write HTML answer page / Run: <a href="https://air.jetbrains.cloud/org/05cf1a7f-6ab5-713b-abd3-29d0c8a05e2d/automations/2bb4367d-4ab8-4b96-ac8a-86b40bc734d7?run=d3131c80-195b-4ebd-82c3-5039a9f54030">run link</a></footer>
+</body>
+</html>
