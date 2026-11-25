@@ -50,6 +50,7 @@ def assert_greeting(result):
         "swift",
         "kotlin",
         "bash",
+        "fish",
         "lua",
         "tcl",
         "awk",
@@ -118,6 +119,8 @@ def test_program_prompts_for_name_and_greets_user(language, tmp_path):
         command = ["java", "-jar", str(jar)]
     elif language == "bash":
         command = ["bash", str(HOMEWORK_DIR / "hello_world.sh")]
+    elif language == "fish":
+        command = ["fish", str(HOMEWORK_DIR / "hello_world.fish")]
     elif language == "lua":
         command = ["lua", str(HOMEWORK_DIR / "hello_world.lua")]
     elif language == "tcl":

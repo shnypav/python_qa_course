@@ -19,6 +19,7 @@ perl hello_world.pl
 swiftc hello_world.swift -o build/hello_world_swift && ./build/hello_world_swift
 kotlinc hello_world.kt -include-runtime -d build/hello_world_kotlin.jar && java -jar build/hello_world_kotlin.jar
 bash hello_world.sh
+fish hello_world.fish
 nasm -f elf64 hello_world.asm -o build/hello_world.o && ld build/hello_world.o -o build/hello_world_asm && ./build/hello_world_asm
 ```
 
@@ -55,4 +56,4 @@ Install the project dependencies with `python3 -m pip install -r ../requirements
 python3 -m pytest -q tests
 ```
 
-The checks run every program, so the matching runtimes and compilers for all eighteen examples must be installed. A missing toolchain is reported as a test failure with the command that needs to be installed.
+The checks run every program, so the matching runtimes and compilers for all nineteen examples must be installed. A missing toolchain is reported as a test failure with the command that needs to be installed.
