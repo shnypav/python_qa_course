@@ -1,0 +1,17 @@
+name: Review check fixture
+on:
+  push:
+    branches:
+      - 'factory/qa-*'
+permissions: {}
+jobs:
+  green:
+    name: Passing fixture
+    runs-on: ubuntu-latest
+    steps:
+      - run: printf '%s\n' 'Synthetic passing check'
+  red:
+    name: Failing fixture
+    runs-on: ubuntu-latest
+    steps:
+      - run: exit 1
